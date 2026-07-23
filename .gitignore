@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# uploaded files (local dev storage; swap for cloud storage in production)
+/public/uploads/*
+!/public/uploads/products/
+/public/uploads/products/*
+!/public/uploads/products/.gitkeep
