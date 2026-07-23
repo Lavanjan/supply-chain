@@ -1,0 +1,9 @@
+export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
+export const SESSION_MAX_AGE_REMEMBER_SECONDS = 60 * 60 * 24 * 30;
+
+export const MAX_FAILED_LOGIN_ATTEMPTS = 5;
+export const ACCOUNT_LOCK_DURATION_MS = 15 * 60 * 1000;
+
+export const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+
+export const PASSWORD_MIN_LENGTH = 8;
