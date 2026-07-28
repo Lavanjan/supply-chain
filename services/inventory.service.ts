@@ -132,6 +132,90 @@ export async function performStockIn(tx: Prisma.TransactionClient, params: Stock
   await recomputeProductStock(tx, params.productId);
 }
 
+interface StockOutFifoConsumedBatch {
+  batchNumber: string | null;
+  expiryDate: Date | null;
+  quantity: number;
+}
+
+interface StockOutFifoParams {
+  productId: string;
+  warehouseId: string;
+  quantity: number;
+  referenceType?: "PURCHASE_ORDER" | "GOODS_RECEIVE_NOTE" | "DELIVERY" | "MANUAL_ADJUSTMENT" | "TRANSFER";
+  referenceId?: string;
+  notes: string | null;
+  performedById: string;
+}
+
+/**
+ * Consumes stock first-expired-first-out across as many batch rows as needed to satisfy
+ * the requested quantity, rather than requiring the caller to pick one batch — used by
+ * Deliveries, which ship from whatever's available. Rows without an expiry date are
+ * treated as lowest priority (consumed only after every dated batch is exhausted), sorted
+ * among themselves by which arrived first. Throws if the warehouse doesn't have enough.
+ */
+export async function performStockOutFifo(
+  tx: Prisma.TransactionClient,
+  params: StockOutFifoParams,
+): Promise<StockOutFifoConsumedBatch[]> {
+  const rows = await tx.inventory.findMany({
+    where: { productId: params.productId, warehouseId: params.warehouseId, quantity: { gt: 0 } },
+    orderBy: { createdAt: "asc" },
+  });
+
+  const sortedRows = [...rows].sort((a, b) => {
+    if (a.expiryDate && b.expiryDate) return a.expiryDate.getTime() - b.expiryDate.getTime();
+    if (a.expiryDate) return -1;
+    if (b.expiryDate) return 1;
+    return 0;
+  });
+
+  const totalAvailable = sortedRows.reduce((sum, row) => sum + Number(row.quantity), 0);
+  if (totalAvailable < params.quantity) {
+    throw new InventoryServiceError(
+      `Insufficient stock — only ${totalAvailable} available, ${params.quantity} required.`,
+      409,
+    );
+  }
+
+  let remaining = params.quantity;
+  const consumed: StockOutFifoConsumedBatch[] = [];
+
+  for (const row of sortedRows) {
+    if (remaining <= 0) break;
+
+    const available = Number(row.quantity);
+    const take = Math.min(available, remaining);
+    const newQuantity = available - take;
+
+    await tx.inventory.update({ where: { id: row.id }, data: { quantity: newQuantity } });
+    await tx.inventoryHistory.create({
+      data: {
+        productId: params.productId,
+        warehouseId: params.warehouseId,
+        type: "STOCK_OUT",
+        quantity: take,
+        previousQuantity: available,
+        newQuantity,
+        batchNumber: row.batchNumber,
+        expiryDate: row.expiryDate,
+        referenceType: params.referenceType,
+        referenceId: params.referenceId,
+        notes: params.notes,
+        performedById: params.performedById,
+      },
+    });
+
+    consumed.push({ batchNumber: row.batchNumber, expiryDate: row.expiryDate, quantity: take });
+    remaining -= take;
+  }
+
+  await recomputeProductStock(tx, params.productId);
+
+  return consumed;
+}
+
 async function assertProductAndWarehouseExist(productId: string, warehouseId: string) {
   const [product, warehouse] = await Promise.all([
     prisma.product.findFirst({ where: { id: productId, isDeleted: false } }),
