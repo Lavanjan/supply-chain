@@ -197,4 +197,28 @@ export const purchaseOrderRepository = {
       orderBy: { orderDate: "desc" },
     });
   },
+
+  findApprovedOptions() {
+    return prisma.purchaseOrder.findMany({
+      where: { isDeleted: false, status: "APPROVED" },
+      select: { id: true, poNumber: true, supplier: { select: { companyName: true } } },
+      orderBy: { orderDate: "desc" },
+    });
+  },
+
+  findByIdForReceiving(id: string) {
+    return prisma.purchaseOrder.findFirst({
+      where: { id, isDeleted: false, status: "APPROVED" },
+      include: {
+        supplier: { select: { companyName: true } },
+        warehouse: { select: { id: true, name: true } },
+        items: {
+          include: {
+            product: { select: { id: true, name: true, sku: true, unit: { select: { symbol: true } } } },
+            grnItems: { select: { receivedQuantity: true } },
+          },
+        },
+      },
+    });
+  },
 };
