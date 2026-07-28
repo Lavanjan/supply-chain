@@ -102,7 +102,13 @@ export const productRepository = {
   findActiveOptionsForSelect() {
     return prisma.product.findMany({
       where: { isDeleted: false, status: "ACTIVE" },
-      select: { id: true, name: true, sku: true },
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        purchasePrice: true,
+        unit: { select: { symbol: true } },
+      },
       orderBy: { name: "asc" },
     });
   },

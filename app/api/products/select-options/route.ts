@@ -7,5 +7,13 @@ export async function GET() {
   if (isGuardFailure(guard)) return guard.response;
 
   const products = await productRepository.findActiveOptionsForSelect();
-  return NextResponse.json(products);
+  return NextResponse.json(
+    products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      sku: product.sku,
+      purchasePrice: Number(product.purchasePrice),
+      unitSymbol: product.unit.symbol,
+    })),
+  );
 }
