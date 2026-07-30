@@ -2,6 +2,7 @@ import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import { formatCurrency } from "@/lib/utils/format";
 import type { PurchaseOrderDetail } from "@/types/purchase-order.types";
+import type { CompanyProfile } from "@/types/settings.types";
 
 const styles = StyleSheet.create({
   page: { padding: 32, fontSize: 10, fontFamily: "Helvetica", color: "#171717" },
@@ -42,14 +43,18 @@ const styles = StyleSheet.create({
   footer: { position: "absolute", bottom: 24, left: 32, right: 32, fontSize: 8, color: "#999999", textAlign: "center" },
 });
 
-export function PurchaseOrderDocument({ po }: { po: PurchaseOrderDetail }) {
+export function PurchaseOrderDocument({ po, company }: { po: PurchaseOrderDetail; company: CompanyProfile }) {
   return (
     <Document title={`Purchase Order ${po.poNumber}`}>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Supply Chain & Inventory</Text>
+            <Text style={styles.title}>{company.companyName}</Text>
             <Text style={styles.subtitle}>Purchase Order</Text>
+            {company.companyAddress && <Text style={styles.subtitle}>{company.companyAddress}</Text>}
+            {(company.companyPhone || company.companyEmail) && (
+              <Text style={styles.subtitle}>{[company.companyPhone, company.companyEmail].filter(Boolean).join(" · ")}</Text>
+            )}
           </View>
           <View>
             <Text style={styles.poNumber}>{po.poNumber}</Text>
@@ -136,7 +141,7 @@ export function PurchaseOrderDocument({ po }: { po: PurchaseOrderDetail }) {
         )}
 
         <Text style={styles.footer}>
-          Generated {dayjs().format("MMMM D, YYYY h:mm A")} · Supply Chain & Inventory Management System
+          Generated {dayjs().format("MMMM D, YYYY h:mm A")} · {company.companyName}
         </Text>
       </Page>
     </Document>

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { isGuardFailure, requireApiPermission } from "@/lib/api/guard";
 import { goodsReceiveNoteService, GoodsReceiveNoteServiceError } from "@/services/goods-receive-note.service";
+import { settingsService } from "@/services/settings.service";
 import { GoodsReceiveNoteDocument } from "@/features/goods-receive-notes/pdf/grn-document";
 
 interface RouteParams {
@@ -15,8 +16,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
 
   try {
-    const grn = await goodsReceiveNoteService.getById(id);
-    const buffer = await renderToBuffer(<GoodsReceiveNoteDocument grn={grn} />);
+    const [grn, company] = await Promise.all([goodsReceiveNoteService.getById(id), settingsService.getGeneralSettings()]);
+    const buffer = await renderToBuffer(<GoodsReceiveNoteDocument grn={grn} company={company} />);
 
     return new NextResponse(new Uint8Array(buffer), {
       headers: {

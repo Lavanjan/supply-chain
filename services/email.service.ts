@@ -49,4 +49,16 @@ export const emailService = {
       `,
     });
   },
+
+  async sendWelcomeEmail(to: string, name: string, setPasswordUrl: string) {
+    await this.send({
+      to,
+      subject: "Welcome to Supply Chain & Inventory Management System",
+      html: `
+        <p>Hi ${name},</p>
+        <p>An account has been created for you on the Supply Chain & Inventory Management System.</p>
+        <p><a href="${setPasswordUrl}">Click here to set your password</a> and sign in. This link expires in 1 hour.</p>
+      `,
+    });
+  },
 };

@@ -1,6 +1,7 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import type { GoodsReceiveNoteDetail } from "@/types/goods-receive-note.types";
+import type { CompanyProfile } from "@/types/settings.types";
 
 const styles = StyleSheet.create({
   page: { padding: 32, fontSize: 10, fontFamily: "Helvetica", color: "#171717" },
@@ -25,14 +26,18 @@ const styles = StyleSheet.create({
   footer: { position: "absolute", bottom: 24, left: 32, right: 32, fontSize: 8, color: "#999999", textAlign: "center" },
 });
 
-export function GoodsReceiveNoteDocument({ grn }: { grn: GoodsReceiveNoteDetail }) {
+export function GoodsReceiveNoteDocument({ grn, company }: { grn: GoodsReceiveNoteDetail; company: CompanyProfile }) {
   return (
     <Document title={`Goods Receive Note ${grn.grnNumber}`}>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Supply Chain & Inventory</Text>
+            <Text style={styles.title}>{company.companyName}</Text>
             <Text style={styles.subtitle}>Goods Receive Note</Text>
+            {company.companyAddress && <Text style={styles.subtitle}>{company.companyAddress}</Text>}
+            {(company.companyPhone || company.companyEmail) && (
+              <Text style={styles.subtitle}>{[company.companyPhone, company.companyEmail].filter(Boolean).join(" · ")}</Text>
+            )}
           </View>
           <View>
             <Text style={styles.grnNumber}>{grn.grnNumber}</Text>
@@ -91,7 +96,7 @@ export function GoodsReceiveNoteDocument({ grn }: { grn: GoodsReceiveNoteDetail 
         )}
 
         <Text style={styles.footer}>
-          Generated {dayjs().format("MMMM D, YYYY h:mm A")} · Supply Chain & Inventory Management System
+          Generated {dayjs().format("MMMM D, YYYY h:mm A")} · {company.companyName}
         </Text>
       </Page>
     </Document>

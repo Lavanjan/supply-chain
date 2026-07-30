@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { isGuardFailure, requireApiPermission } from "@/lib/api/guard";
 import { purchaseOrderService, PurchaseOrderServiceError } from "@/services/purchase-order.service";
+import { settingsService } from "@/services/settings.service";
 import { PurchaseOrderDocument } from "@/features/purchase-orders/pdf/purchase-order-document";
 
 interface RouteParams {
@@ -15,8 +16,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
 
   try {
-    const po = await purchaseOrderService.getById(id);
-    const buffer = await renderToBuffer(<PurchaseOrderDocument po={po} />);
+    const [po, company] = await Promise.all([purchaseOrderService.getById(id), settingsService.getGeneralSettings()]);
+    const buffer = await renderToBuffer(<PurchaseOrderDocument po={po} company={company} />);
 
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
