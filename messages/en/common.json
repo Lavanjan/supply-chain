@@ -1,0 +1,46 @@
+{
+  "header": {
+    "openNavigation": "Open navigation",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "toggleTheme": "Toggle theme",
+    "switchToLightMode": "Switch to light mode",
+    "switchToDarkMode": "Switch to dark mode",
+    "changeLanguage": "Change language",
+    "notifications": "Notifications",
+    "markAllRead": "Mark all read",
+    "noNotificationsYet": "No notifications yet",
+    "roleAdministrator": "Administrator",
+    "roleManager": "Manager",
+    "signOut": "Sign out"
+  },
+  "footer": {
+    "copyright": "© {year} Supply Chain & Inventory Management System. All rights reserved."
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "export": "Export",
+    "cannotBeUndone": "This action cannot be undone."
+  },
+  "auditActions": {
+    "LOGIN": "Login",
+    "LOGOUT": "Logout",
+    "LOGIN_FAILED": "Login Failed",
+    "CREATE": "Create",
+    "UPDATE": "Update",
+    "DELETE": "Delete",
+    "APPROVE": "Approve",
+    "CANCEL": "Cancel",
+    "RESTORE": "Restore"
+  },
+  "purchaseOrderStatus": {
+    "DRAFT": "Draft",
+    "APPROVED": "Approved",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  }
+}

@@ -177,16 +177,10 @@ export function SupplierTable() {
             <div className="flex justify-end gap-1 mt-2">
               <BankDetails supplier={supplier} />
               {can("suppliers.update") && (
-                <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEdit(supplier)} />
+                <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(supplier)} />
               )}
               {can("suppliers.delete") && (
-                <Button
-                  size="small"
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => confirmDelete(supplier)}
-                />
+                <Button type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(supplier)} />
               )}
             </div>
           </Card>

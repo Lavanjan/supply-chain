@@ -1,0 +1,28 @@
+{
+  "welcomeBack": "නැවත සාදරයෙන් පිළිගනිමු, {name}",
+  "quickAccess": "ඉක්මන් ප්‍රවේශය",
+  "recentActivities": "මෑත ක්‍රියාකාරකම්",
+  "recentOrders": "මෑත ඇණවුම්",
+  "noActivityYet": "තවම ක්‍රියාකාරකම් නැත",
+  "noPurchaseOrdersYet": "තවම මිලදී ගැනීමේ ඇණවුම් නැත",
+  "performedAnAction": "{name} ක්‍රියාවක් සිදු කළේය",
+  "stats": {
+    "totalProducts": "මුළු නිෂ්පාදන ගණන",
+    "currentInventory": "වත්මන් තොග",
+    "inventoryValue": "තොග වටිනාකම",
+    "lowStock": "අඩු තොග",
+    "outOfStock": "තොග අවසන්",
+    "suppliers": "සැපයුම්කරුවන්",
+    "customers": "පාරිභෝගිකයන්",
+    "purchaseOrders": "මිලදී ගැනීමේ ඇණවුම්",
+    "todaysDeliveries": "අද දින බෙදාහැරීම්"
+  },
+  "charts": {
+    "loadErrorTitle": "උපකරණ පුවරු ප්‍රස්ථාර පූරණය කළ නොහැකි විය",
+    "loadErrorDescription": "නැවත උත්සාහ කිරීමට පිටුව නැවුම් කරන්න.",
+    "monthlyPurchases": "මාසික මිලදී ගැනීම්",
+    "inventoryMovement": "තොග චලනය (දින 14)",
+    "topProductsByValue": "වටිනාකම අනුව ඉහළම නිෂ්පාදන",
+    "topSuppliersByPurchases": "මිලදී ගැනීම් අනුව ඉහළම සැපයුම්කරුවන්"
+  }
+}

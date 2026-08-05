@@ -2,6 +2,7 @@
 
 import { Card, Empty, List, Tag, Typography } from "antd";
 import dayjs from "dayjs";
+import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/lib/utils/format";
 import type { RecentOrderItem } from "@/types/dashboard.types";
 
@@ -13,10 +14,13 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export function RecentOrders({ orders }: { orders: RecentOrderItem[] }) {
+  const t = useTranslations("dashboard");
+  const tStatus = useTranslations("common.purchaseOrderStatus");
+
   return (
-    <Card title="Recent Orders" className="rounded-2xl h-full">
+    <Card title={t("recentOrders")} className="rounded-2xl h-full">
       {orders.length === 0 ? (
-        <Empty description="No purchase orders yet" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        <Empty description={t("noPurchaseOrdersYet")} image={Empty.PRESENTED_IMAGE_SIMPLE} />
       ) : (
         <List
           dataSource={orders}
@@ -26,7 +30,7 @@ export function RecentOrders({ orders }: { orders: RecentOrderItem[] }) {
                 title={
                   <div className="flex items-center gap-2 flex-wrap">
                     <span>{order.poNumber}</span>
-                    <Tag color={STATUS_COLORS[order.status] ?? "default"}>{order.status}</Tag>
+                    <Tag color={STATUS_COLORS[order.status] ?? "default"}>{tStatus(order.status)}</Tag>
                   </div>
                 }
                 description={

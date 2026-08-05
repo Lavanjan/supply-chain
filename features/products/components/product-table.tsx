@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { App, Avatar, Button, Card, Select, Space, Tag, Typography, type TableColumnsType } from "antd";
 import { DeleteOutlined, EditOutlined, PictureOutlined, PlusOutlined, QrcodeOutlined } from "@ant-design/icons";
+import { useTranslations } from "next-intl";
 import { DataTable } from "@/components/ui/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { usePermission } from "@/hooks/use-permission";
@@ -19,16 +20,19 @@ const STATUS_COLORS: Record<string, string> = {
   DISCONTINUED: "red",
 };
 
-function stockTone(product: ProductListItem): { color: string; label: string } | null {
-  if (product.currentStock <= 0) return { color: "red", label: "Out of stock" };
-  if (product.currentStock <= product.minimumStock) return { color: "gold", label: "Low stock" };
-  return null;
-}
-
 export function ProductTable() {
   const { can } = usePermission();
   const { modal, message } = App.useApp();
   const { categories, units } = useProductOptions();
+  const t = useTranslations("products");
+  const tCommon = useTranslations("common");
+  const tStatus = useTranslations("products.status");
+
+  function stockTone(product: ProductListItem): { color: string; label: string } | null {
+    if (product.currentStock <= 0) return { color: "red", label: t("outOfStock") };
+    if (product.currentStock <= product.minimumStock) return { color: "gold", label: t("lowStock") };
+    return null;
+  }
 
   const [categoryId, setCategoryId] = useState<string | undefined>();
   const [unitId, setUnitId] = useState<string | undefined>();
@@ -55,17 +59,17 @@ export function ProductTable() {
 
   function confirmDelete(product: ProductListItem) {
     modal.confirm({
-      title: `Delete "${product.name}"?`,
-      content: "This action cannot be undone.",
-      okText: "Delete",
+      title: t("deleteConfirmTitle", { name: product.name }),
+      content: tCommon("actions.cannotBeUndone"),
+      okText: tCommon("actions.delete"),
       okButtonProps: { danger: true },
       onOk: async () => {
         try {
           await apiClient.delete(`/api/products/${product.id}`);
-          message.success("Product deleted");
+          message.success(t("deleted"));
           table.reload();
         } catch (error) {
-          message.error(error instanceof ApiError ? error.message : "Unable to delete product");
+          message.error(error instanceof ApiError ? error.message : t("deleteFailed"));
         }
       },
     });
@@ -73,7 +77,7 @@ export function ProductTable() {
 
   const columns: TableColumnsType<ProductListItem> = [
     {
-      title: "Product",
+      title: t("columns.product"),
       dataIndex: "name",
       sorter: true,
       render: (_, record) => (
@@ -86,27 +90,27 @@ export function ProductTable() {
         </div>
       ),
     },
-    { title: "Category", dataIndex: "categoryName" },
+    { title: t("columns.category"), dataIndex: "categoryName" },
     {
-      title: "Unit",
+      title: t("columns.unit"),
       dataIndex: "unitSymbol",
     },
     {
-      title: "Purchase Price",
+      title: t("columns.purchasePrice"),
       dataIndex: "purchasePrice",
       align: "right",
       sorter: true,
       render: (value: number) => formatCurrency(value),
     },
     {
-      title: "Selling Price",
+      title: t("columns.sellingPrice"),
       dataIndex: "sellingPrice",
       align: "right",
       sorter: true,
       render: (value: number) => formatCurrency(value),
     },
     {
-      title: "Stock",
+      title: t("columns.stock"),
       dataIndex: "currentStock",
       align: "right",
       sorter: true,
@@ -123,13 +127,13 @@ export function ProductTable() {
       },
     },
     {
-      title: "Status",
+      title: t("columns.status"),
       dataIndex: "status",
       sorter: true,
-      render: (value: string) => <Tag color={STATUS_COLORS[value]}>{value}</Tag>,
+      render: (value: string) => <Tag color={STATUS_COLORS[value]}>{tStatus(value)}</Tag>,
     },
     {
-      title: "Actions",
+      title: t("columns.actions"),
       key: "actions",
       align: "right",
       render: (_, record) => (
@@ -159,14 +163,14 @@ export function ProductTable() {
         onPageChange={table.setPage}
         searchValue={table.searchInput}
         onSearchChange={table.setSearchInput}
-        searchPlaceholder="Search by name, SKU, or barcode..."
+        searchPlaceholder={t("searchPlaceholder")}
         onSortChange={table.setSort}
-        emptyText="No products yet"
+        emptyText={t("emptyText")}
         filters={
           <div className="flex gap-2 flex-wrap">
             <Select
               allowClear
-              placeholder="Category"
+              placeholder={t("filters.category")}
               className="w-40"
               value={categoryId}
               onChange={setCategoryId}
@@ -174,7 +178,7 @@ export function ProductTable() {
             />
             <Select
               allowClear
-              placeholder="Unit"
+              placeholder={t("filters.unit")}
               className="w-32"
               value={unitId}
               onChange={setUnitId}
@@ -182,14 +186,14 @@ export function ProductTable() {
             />
             <Select
               allowClear
-              placeholder="Status"
+              placeholder={t("filters.status")}
               className="w-36"
               value={status}
               onChange={setStatus}
               options={[
-                { value: "ACTIVE", label: "Active" },
-                { value: "INACTIVE", label: "Inactive" },
-                { value: "DISCONTINUED", label: "Discontinued" },
+                { value: "ACTIVE", label: tStatus("ACTIVE") },
+                { value: "INACTIVE", label: tStatus("INACTIVE") },
+                { value: "DISCONTINUED", label: tStatus("DISCONTINUED") },
               ]}
             />
           </div>
@@ -197,7 +201,7 @@ export function ProductTable() {
         toolbarExtra={
           can("products.create") && (
             <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-              Add Product
+              {t("addProduct")}
             </Button>
           )
         }
@@ -215,7 +219,7 @@ export function ProductTable() {
                       </Typography.Text>
                       <span className="text-xs text-neutral-400">{product.sku}</span>
                     </div>
-                    <Tag color={STATUS_COLORS[product.status]}>{product.status}</Tag>
+                    <Tag color={STATUS_COLORS[product.status]}>{tStatus(product.status)}</Tag>
                   </div>
                   <div className="flex items-center justify-between mt-2 text-sm">
                     <span>{formatCurrency(product.sellingPrice)}</span>
@@ -227,18 +231,12 @@ export function ProductTable() {
                 </div>
               </div>
               <div className="flex justify-end gap-1 mt-2">
-                <Button size="small" type="text" icon={<QrcodeOutlined />} onClick={() => setViewingCodes(product)} />
+                <Button type="text" icon={<QrcodeOutlined />} onClick={() => setViewingCodes(product)} />
                 {can("products.update") && (
-                  <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEdit(product)} />
+                  <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(product)} />
                 )}
                 {can("products.delete") && (
-                  <Button
-                    size="small"
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => confirmDelete(product)}
-                  />
+                  <Button type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(product)} />
                 )}
               </div>
             </Card>

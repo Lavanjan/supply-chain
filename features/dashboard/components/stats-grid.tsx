@@ -11,57 +11,60 @@ import {
   TeamOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
+import { useTranslations } from "next-intl";
 import { StatCard } from "@/features/dashboard/components/stat-card";
 import { formatCompactCurrency, formatCompactNumber, formatNumber } from "@/lib/utils/format";
 import type { DashboardStats } from "@/types/dashboard.types";
 
 export function StatsGrid({ stats }: { stats: DashboardStats }) {
+  const t = useTranslations("dashboard.stats");
+
   const cards = [
     {
       icon: <ShoppingOutlined />,
-      label: "Total Products",
+      label: t("totalProducts"),
       value: formatNumber(stats.totalProducts),
     },
     {
       icon: <DatabaseOutlined />,
-      label: "Current Inventory",
+      label: t("currentInventory"),
       value: formatCompactNumber(stats.currentInventoryUnits),
     },
     {
       icon: <DollarOutlined />,
-      label: "Inventory Value",
+      label: t("inventoryValue"),
       value: formatCompactCurrency(stats.inventoryValue),
     },
     {
       icon: <WarningOutlined />,
-      label: "Low Stock",
+      label: t("lowStock"),
       value: formatNumber(stats.lowStockCount),
       tone: "warning" as const,
     },
     {
       icon: <StopOutlined />,
-      label: "Out Of Stock",
+      label: t("outOfStock"),
       value: formatNumber(stats.outOfStockCount),
       tone: "critical" as const,
     },
     {
       icon: <ShopOutlined />,
-      label: "Suppliers",
+      label: t("suppliers"),
       value: formatNumber(stats.supplierCount),
     },
     {
       icon: <TeamOutlined />,
-      label: "Customers",
+      label: t("customers"),
       value: formatNumber(stats.customerCount),
     },
     {
       icon: <FileTextOutlined />,
-      label: "Purchase Orders",
+      label: t("purchaseOrders"),
       value: formatNumber(stats.purchaseOrderCount),
     },
     {
       icon: <CarOutlined />,
-      label: "Today's Deliveries",
+      label: t("todaysDeliveries"),
       value: formatNumber(stats.todaysDeliveriesCount),
     },
   ];

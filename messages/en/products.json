@@ -1,0 +1,67 @@
+{
+  "outOfStock": "Out of stock",
+  "lowStock": "Low stock",
+  "deleteConfirmTitle": "Delete \"{name}\"?",
+  "deleted": "Product deleted",
+  "deleteFailed": "Unable to delete product",
+  "searchPlaceholder": "Search by name, SKU, or barcode...",
+  "emptyText": "No products yet",
+  "addProduct": "Add Product",
+  "columns": {
+    "product": "Product",
+    "category": "Category",
+    "unit": "Unit",
+    "purchasePrice": "Purchase Price",
+    "sellingPrice": "Selling Price",
+    "stock": "Stock",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "filters": {
+    "category": "Category",
+    "unit": "Unit",
+    "status": "Status"
+  },
+  "status": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "DISCONTINUED": "Discontinued"
+  },
+  "form": {
+    "editTitle": "Edit Product",
+    "createTitle": "New Product",
+    "saveChanges": "Save changes",
+    "createProduct": "Create product",
+    "nameLabel": "Product Name",
+    "namePlaceholder": "e.g. Basmati Rice 25kg",
+    "skuLabel": "SKU",
+    "skuPlaceholder": "e.g. RICE-25",
+    "barcodeLabel": "Barcode",
+    "optional": "Optional",
+    "generate": "Generate",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Select category",
+    "unitLabel": "Unit",
+    "unitPlaceholder": "Select unit",
+    "purchasePriceLabel": "Purchase Price",
+    "sellingPriceLabel": "Selling Price",
+    "minimumStockLabel": "Minimum Stock",
+    "maximumStockLabel": "Maximum Stock",
+    "currentStockLabel": "Current Stock",
+    "statusLabel": "Status",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "updated": "Product updated",
+    "created": "Product created",
+    "genericError": "Something went wrong",
+    "uploadFailed": "Upload failed",
+    "invalidImageType": "Only JPEG, PNG, or WEBP images are allowed",
+    "imageTooLarge": "Image must be smaller than 5MB",
+    "productImageAlt": "Product",
+    "upload": "Upload"
+  },
+  "codes": {
+    "barcode": "Barcode",
+    "qrCode": "QR Code"
+  }
+}

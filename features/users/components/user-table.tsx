@@ -176,13 +176,13 @@ export function UserTable() {
             </div>
             <div className="flex justify-end gap-1 mt-2">
               {can("users.update") && (
-                <Button size="small" type="text" icon={<MailOutlined />} onClick={() => resendInvite(user)} />
+                <Button type="text" icon={<MailOutlined />} onClick={() => resendInvite(user)} />
               )}
               {can("users.update") && (
-                <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEdit(user)} />
+                <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(user)} />
               )}
               {can("users.delete") && user.id !== session?.user.id && (
-                <Button size="small" type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(user)} />
+                <Button type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(user)} />
               )}
             </div>
           </Card>

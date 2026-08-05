@@ -1,0 +1,28 @@
+{
+  "welcomeBack": "Welcome back, {name}",
+  "quickAccess": "Quick access",
+  "recentActivities": "Recent Activities",
+  "recentOrders": "Recent Orders",
+  "noActivityYet": "No activity yet",
+  "noPurchaseOrdersYet": "No purchase orders yet",
+  "performedAnAction": "{name} performed an action",
+  "stats": {
+    "totalProducts": "Total Products",
+    "currentInventory": "Current Inventory",
+    "inventoryValue": "Inventory Value",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out Of Stock",
+    "suppliers": "Suppliers",
+    "customers": "Customers",
+    "purchaseOrders": "Purchase Orders",
+    "todaysDeliveries": "Today's Deliveries"
+  },
+  "charts": {
+    "loadErrorTitle": "Couldn't load dashboard charts",
+    "loadErrorDescription": "Please refresh the page to try again.",
+    "monthlyPurchases": "Monthly Purchases",
+    "inventoryMovement": "Inventory Movement (14 days)",
+    "topProductsByValue": "Top Products by Value",
+    "topSuppliersByPurchases": "Top Suppliers by Purchases"
+  }
+}

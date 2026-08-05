@@ -133,10 +133,10 @@ export function DriverTable() {
             </div>
             <div className="flex justify-end gap-1 mt-2">
               {can("drivers.update") && (
-                <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEdit(driver)} />
+                <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(driver)} />
               )}
               {can("drivers.delete") && (
-                <Button size="small" type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(driver)} />
+                <Button type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(driver)} />
               )}
             </div>
           </Card>

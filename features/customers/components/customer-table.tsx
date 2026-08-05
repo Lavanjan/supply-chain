@@ -185,16 +185,10 @@ export function CustomerTable() {
             </div>
             <div className="flex justify-end gap-1 mt-2">
               {can("customers.update") && (
-                <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEdit(customer)} />
+                <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(customer)} />
               )}
               {can("customers.delete") && (
-                <Button
-                  size="small"
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => confirmDelete(customer)}
-                />
+                <Button type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(customer)} />
               )}
             </div>
           </Card>

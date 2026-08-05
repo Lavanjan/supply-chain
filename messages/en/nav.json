@@ -1,0 +1,31 @@
+{
+  "groups": {
+    "overview": "Overview",
+    "catalog": "Catalog",
+    "partners": "Partners",
+    "operations": "Operations",
+    "fleet": "Fleet",
+    "insights": "Insights",
+    "administration": "Administration"
+  },
+  "items": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "units": "Units",
+    "suppliers": "Suppliers",
+    "customers": "Customers",
+    "warehouses": "Warehouses",
+    "inventory": "Inventory",
+    "purchase-orders": "Purchase Orders",
+    "goods-receive-notes": "Goods Receive Notes",
+    "deliveries": "Deliveries",
+    "vehicles": "Vehicles",
+    "drivers": "Drivers",
+    "reports": "Reports",
+    "users": "User Management",
+    "roles": "Roles & Permissions",
+    "audit-logs": "Audit Logs",
+    "settings": "Settings"
+  }
+}

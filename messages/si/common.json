@@ -1,0 +1,46 @@
+{
+  "header": {
+    "openNavigation": "සංචලනය විවෘත කරන්න",
+    "expandSidebar": "පැති තීරුව විස්තාරණය කරන්න",
+    "collapseSidebar": "පැති තීරුව හකුළන්න",
+    "toggleTheme": "තේමාව මාරු කරන්න",
+    "switchToLightMode": "දීප්ත ප්‍රකාරයට මාරු වන්න",
+    "switchToDarkMode": "අඳුරු ප්‍රකාරයට මාරු වන්න",
+    "changeLanguage": "භාෂාව වෙනස් කරන්න",
+    "notifications": "දැනුම්දීම්",
+    "markAllRead": "සියල්ල කියවූ ලෙස සලකුණු කරන්න",
+    "noNotificationsYet": "තවම දැනුම්දීම් නැත",
+    "roleAdministrator": "පරිපාලක",
+    "roleManager": "කළමනාකරු",
+    "signOut": "පිටවන්න"
+  },
+  "footer": {
+    "copyright": "© {year} සැපයුම් දාම හා තොග කළමනාකරණ පද්ධතිය. සියලුම හිමිකම් ඇවිරිණි."
+  },
+  "actions": {
+    "save": "සුරකින්න",
+    "cancel": "අවලංගු කරන්න",
+    "edit": "සංස්කරණය කරන්න",
+    "delete": "මකන්න",
+    "search": "සොයන්න",
+    "export": "අපනයනය කරන්න",
+    "cannotBeUndone": "මෙම ක්‍රියාව අහෝසි කළ නොහැක."
+  },
+  "auditActions": {
+    "LOGIN": "පිවිසුම",
+    "LOGOUT": "පිටවීම",
+    "LOGIN_FAILED": "පිවිසුම අසාර්ථකයි",
+    "CREATE": "සෑදීම",
+    "UPDATE": "යාවත්කාලීන කිරීම",
+    "DELETE": "මකා දැමීම",
+    "APPROVE": "අනුමත කිරීම",
+    "CANCEL": "අවලංගු කිරීම",
+    "RESTORE": "ප්‍රතිස්ථාපනය කිරීම"
+  },
+  "purchaseOrderStatus": {
+    "DRAFT": "කෙටුම්පත",
+    "APPROVED": "අනුමතයි",
+    "COMPLETED": "සම්පූර්ණයි",
+    "CANCELLED": "අවලංගුයි"
+  }
+}

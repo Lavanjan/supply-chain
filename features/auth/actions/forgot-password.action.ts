@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { getTranslations } from "next-intl/server";
 import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/validations/auth.schema";
 import { authService } from "@/services/auth.service";
 
@@ -10,10 +11,11 @@ export interface ActionResult {
 }
 
 export async function forgotPasswordAction(input: ForgotPasswordInput): Promise<ActionResult> {
+  const t = await getTranslations("auth.forgotPassword");
   const parsed = forgotPasswordSchema.safeParse(input);
 
   if (!parsed.success) {
-    return { success: false, message: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return { success: false, message: parsed.error.issues[0]?.message ?? t("invalidInput") };
   }
 
   const headersList = await headers();
@@ -26,6 +28,6 @@ export async function forgotPasswordAction(input: ForgotPasswordInput): Promise<
 
   return {
     success: true,
-    message: "If an account exists for that email, we've sent password reset instructions.",
+    message: t("successMessage"),
   };
 }

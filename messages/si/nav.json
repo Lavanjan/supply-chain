@@ -1,0 +1,31 @@
+{
+  "groups": {
+    "overview": "දළ විශ්ලේෂණය",
+    "catalog": "නාමාවලිය",
+    "partners": "හවුල්කරුවන්",
+    "operations": "මෙහෙයුම්",
+    "fleet": "වාහන කණ්ඩායම",
+    "insights": "විශ්ලේෂණ",
+    "administration": "පරිපාලනය"
+  },
+  "items": {
+    "dashboard": "උපකරණ පුවරුව",
+    "products": "නිෂ්පාදන",
+    "categories": "කාණ්ඩ",
+    "units": "ඒකක",
+    "suppliers": "සැපයුම්කරුවන්",
+    "customers": "පාරිභෝගිකයන්",
+    "warehouses": "ගබඩා",
+    "inventory": "තොග",
+    "purchase-orders": "මිලදී ගැනීමේ ඇණවුම්",
+    "goods-receive-notes": "භාණ්ඩ ලැබීමේ සටහන්",
+    "deliveries": "බෙදාහැරීම්",
+    "vehicles": "වාහන",
+    "drivers": "රියදුරන්",
+    "reports": "වාර්තා",
+    "users": "පරිශීලක කළමනාකරණය",
+    "roles": "භූමිකා සහ අවසර",
+    "audit-logs": "විගණන සටහන්",
+    "settings": "සැකසුම්"
+  }
+}

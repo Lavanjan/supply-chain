@@ -113,16 +113,10 @@ export function CategoryTable() {
             </div>
             <div className="flex justify-end gap-1 mt-2">
               {can("categories.update") && (
-                <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEdit(category)} />
+                <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(category)} />
               )}
               {can("categories.delete") && (
-                <Button
-                  size="small"
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => confirmDelete(category)}
-                />
+                <Button type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(category)} />
               )}
             </div>
           </Card>

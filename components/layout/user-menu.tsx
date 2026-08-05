@@ -3,9 +3,11 @@
 import { signOut, useSession } from "next-auth/react";
 import { Avatar, Dropdown, Tag, Typography, type MenuProps } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { useTranslations } from "next-intl";
 
 export function UserMenu() {
   const { data: session } = useSession();
+  const t = useTranslations("common.header");
 
   if (!session?.user) return null;
 
@@ -23,7 +25,7 @@ export function UserMenu() {
             {email}
           </Typography.Text>
           <Tag color={role === "ADMIN" ? "blue" : "green"} className="mt-1">
-            {role === "ADMIN" ? "Administrator" : "Manager"}
+            {role === "ADMIN" ? t("roleAdministrator") : t("roleManager")}
           </Tag>
         </div>
       ),
@@ -32,7 +34,7 @@ export function UserMenu() {
     { type: "divider" },
     {
       key: "logout",
-      label: "Sign out",
+      label: t("signOut"),
       icon: <LogoutOutlined />,
       danger: true,
       onClick: () => signOut({ callbackUrl: "/login" }),

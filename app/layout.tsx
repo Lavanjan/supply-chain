@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { AppProviders } from "@/components/providers/app-providers";
 import { THEME_COOKIE_NAME } from "@/lib/constants/theme";
+import { defaultLocale, isLocale, LOCALE_COOKIE_NAME } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,14 +34,19 @@ export default async function RootLayout({
 }>) {
   const [cookieStore, session] = await Promise.all([cookies(), auth()]);
   const isDark = cookieStore.get(THEME_COOKIE_NAME)?.value === "dark";
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE_NAME)?.value;
+  const locale = isLocale(cookieLocale) ? cookieLocale : defaultLocale;
+  const messages = await getMessages(locale);
 
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased${isDark ? " dark" : ""}`}
     >
       <body className="min-h-full flex flex-col">
-        <AppProviders session={session}>{children}</AppProviders>
+        <AppProviders session={session} locale={locale} messages={messages}>
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

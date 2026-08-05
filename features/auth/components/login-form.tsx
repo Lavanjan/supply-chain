@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { App, Button, Card, Checkbox, Input, Typography } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { useTranslations } from "next-intl";
 import { FormField } from "@/components/ui/form-field";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth.schema";
 import { DEFAULT_LOGIN_REDIRECT } from "@/lib/constants/routes";
@@ -17,6 +18,7 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const { message } = App.useApp();
   const [submitting, setSubmitting] = useState(false);
+  const t = useTranslations("auth.login");
 
   const {
     control,
@@ -27,7 +29,7 @@ export function LoginForm() {
     defaultValues: { email: "", password: "", remember: false },
   });
 
-  const urlErrorMessage = resolveLoginErrorMessage(searchParams.get("code"));
+  const urlErrorMessage = resolveLoginErrorMessage(searchParams.get("code"), t);
 
   async function onSubmit(values: LoginInput) {
     setSubmitting(true);
@@ -40,7 +42,7 @@ export function LoginForm() {
       });
 
       if (result?.error) {
-        message.error(resolveLoginErrorMessage(result.code) ?? "Unable to sign in.");
+        message.error(resolveLoginErrorMessage(result.code, t) ?? t("errors.default"));
         return;
       }
 
@@ -56,11 +58,9 @@ export function LoginForm() {
     <Card className="shadow-lg rounded-2xl" styles={{ body: { padding: "2rem" } }}>
       <div className="mb-6 text-center">
         <Typography.Title level={3} className="!mb-1">
-          Welcome back
+          {t("title")}
         </Typography.Title>
-        <Typography.Text type="secondary">
-          Sign in to your Supply Chain & Inventory account
-        </Typography.Text>
+        <Typography.Text type="secondary">{t("subtitle")}</Typography.Text>
       </div>
 
       {urlErrorMessage && (
@@ -73,25 +73,23 @@ export function LoginForm() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FormField control={control} name="email" label="Email" required>
+        <FormField control={control} name="email" label={t("emailLabel")} required>
           {(field) => (
             <Input
               {...field}
-              size="large"
               type="email"
               autoComplete="email"
               prefix={<MailOutlined className="text-neutral-400" />}
-              placeholder="you@company.com"
+              placeholder={t("emailPlaceholder")}
               status={errors.email ? "error" : ""}
             />
           )}
         </FormField>
 
-        <FormField control={control} name="password" label="Password" required>
+        <FormField control={control} name="password" label={t("passwordLabel")} required>
           {(field) => (
             <Input.Password
               {...field}
-              size="large"
               autoComplete="current-password"
               prefix={<LockOutlined className="text-neutral-400" />}
               placeholder="••••••••"
@@ -104,24 +102,17 @@ export function LoginForm() {
           <FormField control={control} name="remember" className="!mb-0">
             {(field) => (
               <Checkbox checked={field.value} onChange={(e) => field.onChange(e.target.checked)}>
-                Remember me
+                {t("rememberMe")}
               </Checkbox>
             )}
           </FormField>
           <a href="/forgot-password" className="text-sm text-blue-600 hover:underline">
-            Forgot password?
+            {t("forgotPassword")}
           </a>
         </div>
 
-        <Button
-          type="primary"
-          htmlType="submit"
-          size="large"
-          block
-          loading={submitting}
-          className="!h-11"
-        >
-          Sign In
+        <Button type="primary" htmlType="submit" block loading={submitting}>
+          {t("submit")}
         </Button>
       </form>
     </Card>

@@ -32,6 +32,7 @@ export function FormField<T extends FieldValues, K extends Path<T>>({
           label={label}
           htmlFor={name}
           required={required}
+          layout="vertical"
           validateStatus={fieldState.error ? "error" : ""}
           help={fieldState.error?.message}
           className={className}

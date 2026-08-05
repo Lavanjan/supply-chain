@@ -1,0 +1,67 @@
+{
+  "outOfStock": "තොග අවසන්",
+  "lowStock": "අඩු තොග",
+  "deleteConfirmTitle": "\"{name}\" මකන්නද?",
+  "deleted": "නිෂ්පාදනය මකා දමන ලදී",
+  "deleteFailed": "නිෂ්පාදනය මකා දැමිය නොහැක",
+  "searchPlaceholder": "නම, SKU, හෝ බාර්කෝඩ් අනුව සොයන්න...",
+  "emptyText": "තවම නිෂ්පාදන නැත",
+  "addProduct": "නිෂ්පාදනයක් එකතු කරන්න",
+  "columns": {
+    "product": "නිෂ්පාදනය",
+    "category": "කාණ්ඩය",
+    "unit": "ඒකකය",
+    "purchasePrice": "මිලදී ගැනීමේ මිල",
+    "sellingPrice": "විකුණුම් මිල",
+    "stock": "තොගය",
+    "status": "තත්ත්වය",
+    "actions": "ක්‍රියා"
+  },
+  "filters": {
+    "category": "කාණ්ඩය",
+    "unit": "ඒකකය",
+    "status": "තත්ත්වය"
+  },
+  "status": {
+    "ACTIVE": "සක්‍රීයයි",
+    "INACTIVE": "අක්‍රීයයි",
+    "DISCONTINUED": "නවත්වා ඇත"
+  },
+  "form": {
+    "editTitle": "නිෂ්පාදනය සංස්කරණය කරන්න",
+    "createTitle": "නව නිෂ්පාදනය",
+    "saveChanges": "වෙනස්කම් සුරකින්න",
+    "createProduct": "නිෂ්පාදනය සාදන්න",
+    "nameLabel": "නිෂ්පාදන නාමය",
+    "namePlaceholder": "උදා. බාස්මතී සහල් කිලෝ 25",
+    "skuLabel": "SKU",
+    "skuPlaceholder": "උදා. RICE-25",
+    "barcodeLabel": "බාර්කෝඩ්",
+    "optional": "විකල්පයි",
+    "generate": "උත්පාදනය කරන්න",
+    "categoryLabel": "කාණ්ඩය",
+    "categoryPlaceholder": "කාණ්ඩය තෝරන්න",
+    "unitLabel": "ඒකකය",
+    "unitPlaceholder": "ඒකකය තෝරන්න",
+    "purchasePriceLabel": "මිලදී ගැනීමේ මිල",
+    "sellingPriceLabel": "විකුණුම් මිල",
+    "minimumStockLabel": "අවම තොගය",
+    "maximumStockLabel": "උපරිම තොගය",
+    "currentStockLabel": "වත්මන් තොගය",
+    "statusLabel": "තත්ත්වය",
+    "descriptionLabel": "විස්තරය",
+    "descriptionPlaceholder": "විකල්ප විස්තරයක්",
+    "updated": "නිෂ්පාදනය යාවත්කාලීන කරන ලදී",
+    "created": "නිෂ්පාදනය සාදන ලදී",
+    "genericError": "කිසියම් දෝෂයක් ඇතිවිය",
+    "uploadFailed": "උඩුගත කිරීම අසාර්ථක විය",
+    "invalidImageType": "JPEG, PNG, හෝ WEBP රූප පමණක් ඉඩ දෙනු ලැබේ",
+    "imageTooLarge": "රූපය මෙගාබයිට් 5කට වඩා කුඩා විය යුතුය",
+    "productImageAlt": "නිෂ්පාදනය",
+    "upload": "උඩුගත කරන්න"
+  },
+  "codes": {
+    "barcode": "බාර්කෝඩ්",
+    "qrCode": "QR කේතය"
+  }
+}

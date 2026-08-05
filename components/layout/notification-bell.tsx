@@ -5,6 +5,7 @@ import { Badge, Button, Empty, List, Popover, Typography } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useTranslations } from "next-intl";
 
 dayjs.extend(relativeTime);
 
@@ -17,6 +18,7 @@ interface NotificationItem {
 }
 
 export function NotificationBell() {
+  const t = useTranslations("common.header");
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -53,17 +55,17 @@ export function NotificationBell() {
       content={
         <div className="w-80 max-w-[85vw]">
           <div className="flex items-center justify-between px-1 pb-2">
-            <Typography.Text strong>Notifications</Typography.Text>
+            <Typography.Text strong>{t("notifications")}</Typography.Text>
             {unreadCount > 0 && (
-              <Button type="link" size="small" onClick={handleMarkAllRead}>
-                Mark all read
+              <Button type="link" onClick={handleMarkAllRead}>
+                {t("markAllRead")}
               </Button>
             )}
           </div>
           <List
             loading={loading}
             dataSource={notifications}
-            locale={{ emptyText: <Empty description="No notifications yet" /> }}
+            locale={{ emptyText: <Empty description={t("noNotificationsYet")} /> }}
             renderItem={(item) => (
               <List.Item className={item.isRead ? "opacity-60" : ""}>
                 <List.Item.Meta

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, Input, Typography } from "antd";
 import { LockOutlined } from "@ant-design/icons";
+import { useTranslations } from "next-intl";
 import { FormField } from "@/components/ui/form-field";
 import { resetPasswordSchema, type ResetPasswordInput } from "@/lib/validations/auth.schema";
 import { resetPasswordAction } from "@/features/auth/actions/reset-password.action";
@@ -16,6 +17,7 @@ export function ResetPasswordForm() {
   const token = searchParams.get("token") ?? "";
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const t = useTranslations("auth.resetPassword");
 
   const {
     control,
@@ -45,14 +47,12 @@ export function ResetPasswordForm() {
     return (
       <Card className="shadow-lg rounded-2xl" styles={{ body: { padding: "2rem" } }}>
         <Typography.Title level={3} className="!mb-2">
-          Invalid link
+          {t("invalidLinkTitle")}
         </Typography.Title>
-        <Typography.Text type="secondary">
-          This password reset link is missing its token. Please request a new one.
-        </Typography.Text>
+        <Typography.Text type="secondary">{t("invalidLinkDescription")}</Typography.Text>
         <div className="mt-4">
           <a href="/forgot-password" className="text-blue-600 hover:underline">
-            Request a new link
+            {t("requestNewLink")}
           </a>
         </div>
       </Card>
@@ -63,9 +63,9 @@ export function ResetPasswordForm() {
     <Card className="shadow-lg rounded-2xl" styles={{ body: { padding: "2rem" } }}>
       <div className="mb-6 text-center">
         <Typography.Title level={3} className="!mb-1">
-          Reset your password
+          {t("title")}
         </Typography.Title>
-        <Typography.Text type="secondary">Choose a new password for your account</Typography.Text>
+        <Typography.Text type="secondary">{t("subtitle")}</Typography.Text>
       </div>
 
       {errorMessage && (
@@ -78,11 +78,10 @@ export function ResetPasswordForm() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FormField control={control} name="password" label="New password" required>
+        <FormField control={control} name="password" label={t("newPasswordLabel")} required>
           {(field) => (
             <Input.Password
               {...field}
-              size="large"
               autoComplete="new-password"
               prefix={<LockOutlined className="text-neutral-400" />}
               placeholder="••••••••"
@@ -91,11 +90,10 @@ export function ResetPasswordForm() {
           )}
         </FormField>
 
-        <FormField control={control} name="confirmPassword" label="Confirm password" required>
+        <FormField control={control} name="confirmPassword" label={t("confirmPasswordLabel")} required>
           {(field) => (
             <Input.Password
               {...field}
-              size="large"
               autoComplete="new-password"
               prefix={<LockOutlined className="text-neutral-400" />}
               placeholder="••••••••"
@@ -104,8 +102,8 @@ export function ResetPasswordForm() {
           )}
         </FormField>
 
-        <Button type="primary" htmlType="submit" size="large" block loading={submitting} className="!h-11">
-          Reset password
+        <Button type="primary" htmlType="submit" block loading={submitting}>
+          {t("submit")}
         </Button>
       </form>
     </Card>

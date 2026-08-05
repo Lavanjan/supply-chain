@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Alert, Card, Skeleton } from "antd";
+import { useTranslations } from "next-intl";
 import { MonthlyPurchasesChart } from "@/features/dashboard/components/charts/monthly-purchases-chart";
 import { InventoryMovementChart } from "@/features/dashboard/components/charts/inventory-movement-chart";
 import { TopProductsChart } from "@/features/dashboard/components/charts/top-products-chart";
@@ -17,6 +18,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 export function DashboardCharts() {
+  const t = useTranslations("dashboard.charts");
   const [data, setData] = useState<DashboardChartsPayload | null>(null);
   const [error, setError] = useState(false);
 
@@ -41,14 +43,7 @@ export function DashboardCharts() {
   }, []);
 
   if (error) {
-    return (
-      <Alert
-        type="error"
-        showIcon
-        message="Couldn't load dashboard charts"
-        description="Please refresh the page to try again."
-      />
-    );
+    return <Alert type="error" showIcon message={t("loadErrorTitle")} description={t("loadErrorDescription")} />;
   }
 
   if (!data) {
@@ -65,16 +60,16 @@ export function DashboardCharts() {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-      <ChartCard title="Monthly Purchases">
+      <ChartCard title={t("monthlyPurchases")}>
         <MonthlyPurchasesChart data={data.monthlyPurchases} />
       </ChartCard>
-      <ChartCard title="Inventory Movement (14 days)">
+      <ChartCard title={t("inventoryMovement")}>
         <InventoryMovementChart data={data.inventoryMovement} />
       </ChartCard>
-      <ChartCard title="Top Products by Value">
+      <ChartCard title={t("topProductsByValue")}>
         <TopProductsChart data={data.topProducts} />
       </ChartCard>
-      <ChartCard title="Top Suppliers by Purchases">
+      <ChartCard title={t("topSuppliersByPurchases")}>
         <TopSuppliersChart data={data.topSuppliers} />
       </ChartCard>
     </div>

@@ -126,10 +126,10 @@ export function VehicleTable() {
             </div>
             <div className="flex justify-end gap-1 mt-2">
               {can("vehicles.update") && (
-                <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEdit(vehicle)} />
+                <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(vehicle)} />
               )}
               {can("vehicles.delete") && (
-                <Button size="small" type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(vehicle)} />
+                <Button type="text" danger icon={<DeleteOutlined />} onClick={() => confirmDelete(vehicle)} />
               )}
             </div>
           </Card>

@@ -3,6 +3,7 @@
 import { Badge, Card, Empty, List } from "antd";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useTranslations } from "next-intl";
 
 dayjs.extend(relativeTime);
 
@@ -21,18 +22,20 @@ export function NotificationsPanel({
   notifications: NotificationItem[];
   unreadCount: number;
 }) {
+  const tHeader = useTranslations("common.header");
+
   return (
     <Card
       title={
         <span className="flex items-center gap-2">
-          Notifications
+          {tHeader("notifications")}
           {unreadCount > 0 && <Badge count={unreadCount} size="small" />}
         </span>
       }
       className="rounded-2xl h-full"
     >
       {notifications.length === 0 ? (
-        <Empty description="No notifications yet" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        <Empty description={tHeader("noNotificationsYet")} image={Empty.PRESENTED_IMAGE_SIMPLE} />
       ) : (
         <List
           dataSource={notifications}

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, Input, Typography } from "antd";
 import { MailOutlined } from "@ant-design/icons";
+import { useTranslations } from "next-intl";
 import { FormField } from "@/components/ui/form-field";
 import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/validations/auth.schema";
 import { forgotPasswordAction } from "@/features/auth/actions/forgot-password.action";
@@ -12,6 +13,7 @@ import { forgotPasswordAction } from "@/features/auth/actions/forgot-password.ac
 export function ForgotPasswordForm() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const t = useTranslations("auth.forgotPassword");
 
   const {
     control,
@@ -36,11 +38,9 @@ export function ForgotPasswordForm() {
     <Card className="shadow-lg rounded-2xl" styles={{ body: { padding: "2rem" } }}>
       <div className="mb-6 text-center">
         <Typography.Title level={3} className="!mb-1">
-          Forgot password?
+          {t("title")}
         </Typography.Title>
-        <Typography.Text type="secondary">
-          Enter your email and we&apos;ll send you reset instructions
-        </Typography.Text>
+        <Typography.Text type="secondary">{t("subtitle")}</Typography.Text>
       </div>
 
       {result ? (
@@ -56,29 +56,28 @@ export function ForgotPasswordForm() {
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <FormField control={control} name="email" label="Email" required>
+          <FormField control={control} name="email" label={t("emailLabel")} required>
             {(field) => (
               <Input
                 {...field}
-                size="large"
                 type="email"
                 autoComplete="email"
                 prefix={<MailOutlined className="text-neutral-400" />}
-                placeholder="you@company.com"
+                placeholder={t("emailPlaceholder")}
                 status={errors.email ? "error" : ""}
               />
             )}
           </FormField>
 
-          <Button type="primary" htmlType="submit" size="large" block loading={submitting} className="!h-11">
-            Send reset link
+          <Button type="primary" htmlType="submit" block loading={submitting}>
+            {t("submit")}
           </Button>
         </form>
       )}
 
       <div className="mt-4 text-center text-sm">
         <a href="/login" className="text-blue-600 hover:underline">
-          Back to sign in
+          {t("backToSignIn")}
         </a>
       </div>
     </Card>
