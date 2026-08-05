@@ -1,9 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
 import { auth } from "@/auth";
 import { hasAnyPermission } from "@/lib/rbac/permissions";
+import { uploadToR2 } from "@/lib/storage/r2";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES: Record<string, string> = {
@@ -11,8 +10,6 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
 };
-
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "products");
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -39,11 +36,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Image must be smaller than 5MB" }, { status: 422 });
   }
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-
-  const filename = `${randomUUID()}.${extension}`;
+  const key = `products/${randomUUID()}.${extension}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(UPLOAD_DIR, filename), buffer);
 
-  return NextResponse.json({ url: `/uploads/products/${filename}` }, { status: 201 });
+  try {
+    const url = await uploadToR2({ key, body: buffer, contentType: file.type });
+    return NextResponse.json({ url }, { status: 201 });
+  } catch (error) {
+    console.error("R2 upload failed:", error);
+    return NextResponse.json({ error: "Unable to upload image. Please try again." }, { status: 502 });
+  }
 }

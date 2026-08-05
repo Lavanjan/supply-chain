@@ -3,9 +3,21 @@ import { productRepository } from "@/repositories/product.repository";
 import { categoryRepository } from "@/repositories/category.repository";
 import { unitRepository } from "@/repositories/unit.repository";
 import { auditLogRepository } from "@/repositories/audit-log.repository";
+import { deleteFromR2, extractR2Key } from "@/lib/storage/r2";
 import type { ProductInput } from "@/lib/validations/product.schema";
 import type { PaginationParams } from "@/types/api.types";
 import type { ProductStatus } from "@/lib/generated/prisma/client";
+
+async function cleanupReplacedImage(previousUrl: string | null, nextUrl: string | null) {
+  if (!previousUrl || previousUrl === nextUrl) return;
+  const key = extractR2Key(previousUrl);
+  if (!key) return;
+  try {
+    await deleteFromR2(key);
+  } catch (error) {
+    console.error("Failed to delete replaced product image from R2:", error);
+  }
+}
 
 export class ProductServiceError extends Error {
   status: number;
@@ -178,6 +190,8 @@ export const productService = {
       status: input.status,
       updatedBy: actor.userId,
     });
+
+    await cleanupReplacedImage(existing.imageUrl, updated.imageUrl);
 
     await auditLogRepository.create({
       userId: actor.userId,
