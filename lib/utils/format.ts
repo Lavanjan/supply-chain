@@ -5,14 +5,14 @@ const compactFormatter = new Intl.NumberFormat("en-US", {
 
 const currencyCompactFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "USD",
+  currency: "LKR",
   notation: "compact",
   maximumFractionDigits: 1,
 });
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "USD",
+  currency: "LKR",
   maximumFractionDigits: 2,
 });
 

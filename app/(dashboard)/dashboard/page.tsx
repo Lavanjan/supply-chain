@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import dayjs from "dayjs";
 import { requireSession } from "@/lib/rbac/permissions";
-import { QuickAccess } from "@/features/dashboard/components/quick-access";
 import { WelcomeCard } from "@/features/dashboard/components/welcome-card";
-import { StatsGrid } from "@/features/dashboard/components/stats-grid";
+import { StatsOverview } from "@/features/dashboard/components/stats-overview";
 import { DashboardCharts } from "@/features/dashboard/components/dashboard-charts";
 import { RecentActivities } from "@/features/dashboard/components/recent-activities";
 import { RecentOrders } from "@/features/dashboard/components/recent-orders";
@@ -32,9 +31,7 @@ export default async function DashboardPage() {
         role={user.role}
         formattedDate={dayjs().format("dddd, MMMM D, YYYY")}
       />
-      <QuickAccess permissions={user.permissions} />
-
-      <StatsGrid stats={stats} />
+      <StatsOverview stats={stats} />
 
       <DashboardCharts />
 

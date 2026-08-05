@@ -101,6 +101,32 @@ async function assertReferencesExist(input: DeliveryInput) {
   }
 }
 
+async function assertSufficientStock(input: DeliveryInput) {
+  const requestedByProduct = new Map<string, number>();
+  for (const item of input.items) {
+    requestedByProduct.set(item.productId, (requestedByProduct.get(item.productId) ?? 0) + item.quantity);
+  }
+
+  const productIds = [...requestedByProduct.keys()];
+  const rows = await prisma.inventory.groupBy({
+    by: ["productId"],
+    where: { productId: { in: productIds }, warehouseId: input.warehouseId },
+    _sum: { quantity: true },
+  });
+  const availableByProduct = new Map(rows.map((row) => [row.productId, Number(row._sum.quantity ?? 0)]));
+
+  for (const [productId, requested] of requestedByProduct) {
+    const available = availableByProduct.get(productId) ?? 0;
+    if (requested > available) {
+      const product = await prisma.product.findUnique({ where: { id: productId }, select: { name: true } });
+      throw new DeliveryServiceError(
+        `Insufficient stock for ${product?.name ?? "selected product"} — only ${available} available, ${requested} requested.`,
+        409,
+      );
+    }
+  }
+}
+
 export const deliveryService = {
   async list(params: PaginationParams & { status?: DeliveryStatus }) {
     const skip = (params.page - 1) * params.pageSize;
@@ -122,6 +148,7 @@ export const deliveryService = {
 
   async create(input: DeliveryInput, actor: ActorContext): Promise<DeliveryDetail> {
     await assertReferencesExist(input);
+    await assertSufficientStock(input);
 
     const deliveryNumber = await deliveryRepository.generateDeliveryNumber();
     const created = await deliveryRepository.createWithItems({
@@ -159,6 +186,7 @@ export const deliveryService = {
     }
 
     await assertReferencesExist(input);
+    await assertSufficientStock(input);
 
     const updated = await deliveryRepository.updateWithItems(id, {
       customerId: input.customerId,

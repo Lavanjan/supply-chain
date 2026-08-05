@@ -194,7 +194,7 @@ export function ProductFormModal({ open, onClose, onSuccess, product }: ProductF
                 {...field}
                 min={0}
                 precision={2}
-                prefix="$"
+                prefix="LKR"
                 className="w-full"
                 status={errors.purchasePrice ? "error" : ""}
               />
@@ -207,7 +207,7 @@ export function ProductFormModal({ open, onClose, onSuccess, product }: ProductF
                 {...field}
                 min={0}
                 precision={2}
-                prefix="$"
+                prefix="LKR"
                 className="w-full"
                 status={errors.sellingPrice ? "error" : ""}
               />

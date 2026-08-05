@@ -1,6 +1,5 @@
 {
   "welcomeBack": "නැවත සාදරයෙන් පිළිගනිමු, {name}",
-  "quickAccess": "ඉක්මන් ප්‍රවේශය",
   "recentActivities": "මෑත ක්‍රියාකාරකම්",
   "recentOrders": "මෑත ඇණවුම්",
   "noActivityYet": "තවම ක්‍රියාකාරකම් නැත",
@@ -15,7 +14,14 @@
     "suppliers": "සැපයුම්කරුවන්",
     "customers": "පාරිභෝගිකයන්",
     "purchaseOrders": "මිලදී ගැනීමේ ඇණවුම්",
-    "todaysDeliveries": "අද දින බෙදාහැරීම්"
+    "todaysDeliveries": "අද දින බෙදාහැරීම්",
+    "unitsInStock": "තොගයේ ඒකක {count}ක්",
+    "acrossWarehouses": "සියලුම ගබඩා පුරා",
+    "allTimeOrders": "සියලු කාලවල ලබා දුන් ඇණවුම්",
+    "scheduledToday": "අද දිනට සැලසුම් කර ඇත",
+    "stockHealth": "තොග තත්ත්වය",
+    "healthy": "යහපත්",
+    "productsCount": "නිෂ්පාදන {count}ක්"
   },
   "charts": {
     "loadErrorTitle": "උපකරණ පුවරු ප්‍රස්ථාර පූරණය කළ නොහැකි විය",

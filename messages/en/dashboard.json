@@ -1,6 +1,5 @@
 {
   "welcomeBack": "Welcome back, {name}",
-  "quickAccess": "Quick access",
   "recentActivities": "Recent Activities",
   "recentOrders": "Recent Orders",
   "noActivityYet": "No activity yet",
@@ -15,7 +14,14 @@
     "suppliers": "Suppliers",
     "customers": "Customers",
     "purchaseOrders": "Purchase Orders",
-    "todaysDeliveries": "Today's Deliveries"
+    "todaysDeliveries": "Today's Deliveries",
+    "unitsInStock": "{count} units in stock",
+    "acrossWarehouses": "Across all warehouses",
+    "allTimeOrders": "All-time orders placed",
+    "scheduledToday": "Scheduled for today",
+    "stockHealth": "Stock Health",
+    "healthy": "Healthy",
+    "productsCount": "{count} products"
   },
   "charts": {
     "loadErrorTitle": "Couldn't load dashboard charts",
