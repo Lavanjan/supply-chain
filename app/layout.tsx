@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Ubuntu, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { AppProviders } from "@/components/providers/app-providers";
@@ -8,9 +8,10 @@ import { defaultLocale, isLocale, LOCALE_COOKIE_NAME } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const ubuntu = Ubuntu({
+  variable: "--font-ubuntu",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -41,7 +42,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased${isDark ? " dark" : ""}`}
+      className={`${ubuntu.variable} ${geistMono.variable} h-full antialiased${isDark ? " dark" : ""}`}
     >
       <body className="min-h-full flex flex-col">
         <AppProviders session={session} locale={locale} messages={messages}>
