@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { App, Button, Card, Descriptions, Modal, Skeleton, Table, Tag, Typography } from "antd";
+import { App, Button, Card, Descriptions, Skeleton, Table, Tag, Typography } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { CheckOutlined, CloseOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { apiClient, ApiError } from "@/lib/api/client";

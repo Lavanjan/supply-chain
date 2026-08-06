@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { App, Input, Modal, Select } from "antd";
+import { App, Input, Select } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { FormField } from "@/components/ui/form-field";
 import { customerSchema, type CustomerInput } from "@/lib/validations/customer.schema";
 import { CUSTOMER_TYPE_LABELS } from "@/lib/constants/customer";

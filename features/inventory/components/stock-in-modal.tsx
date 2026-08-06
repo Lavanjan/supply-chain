@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { App, DatePicker, Input, InputNumber, Modal, Select } from "antd";
+import { App, DatePicker, Input, InputNumber, Select } from "antd";
+import { Modal } from "@/components/ui/modal";
 import dayjs from "dayjs";
 import { FormField } from "@/components/ui/form-field";
 import { stockInSchema, type StockInInput } from "@/lib/validations/inventory.schema";

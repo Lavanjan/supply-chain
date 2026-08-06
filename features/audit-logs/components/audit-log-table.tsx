@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, DatePicker, Modal, Select, Tag, Typography, type TableColumnsType } from "antd";
+import { Button, Card, DatePicker, Select, Tag, Typography, type TableColumnsType } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { EyeOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DataTable } from "@/components/ui/data-table";

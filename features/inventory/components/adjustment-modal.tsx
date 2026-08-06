@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { App, Alert, Input, InputNumber, Modal, Select } from "antd";
+import { App, Alert, Input, InputNumber, Select } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { FormField } from "@/components/ui/form-field";
 import { adjustmentSchema, type AdjustmentInput } from "@/lib/validations/inventory.schema";
 import { apiClient, ApiError } from "@/lib/api/client";

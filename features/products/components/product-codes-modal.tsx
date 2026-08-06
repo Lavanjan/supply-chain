@@ -1,6 +1,7 @@
 "use client";
 
-import { Modal, Typography } from "antd";
+import { Typography } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { useTranslations } from "next-intl";
 import { ProductBarcode } from "@/features/products/components/product-barcode";
 import { ProductQrCode } from "@/features/products/components/product-qrcode";

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button, Card, Descriptions, Modal, Skeleton, Table, Tag, Typography } from "antd";
+import { Button, Card, Descriptions, Skeleton, Table, Tag, Typography } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { DownloadOutlined, FileTextOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { apiClient } from "@/lib/api/client";

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { App, Button, Input, InputNumber, Modal, Select } from "antd";
+import { App, Button, Input, InputNumber, Select } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { useTranslations } from "next-intl";
 import { FormField } from "@/components/ui/form-field";
 import { ProductImageUpload } from "@/features/products/components/product-image-upload";

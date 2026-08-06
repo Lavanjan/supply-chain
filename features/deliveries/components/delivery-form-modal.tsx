@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { App, Button, Card, DatePicker, Input, InputNumber, Modal, Select, Table, Typography } from "antd";
+import { App, Button, Card, DatePicker, Input, InputNumber, Select, Table, Typography } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { FormField } from "@/components/ui/form-field";
