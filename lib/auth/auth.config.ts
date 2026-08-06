@@ -25,7 +25,6 @@ export const authConfig: NextAuthConfig = {
         token.role = authorizedUser.role;
         token.permissions = authorizedUser.permissions;
         token.name = authorizedUser.name;
-        token.email = authorizedUser.email;
         token.avatarUrl = authorizedUser.avatarUrl;
       }
 
@@ -36,7 +35,6 @@ export const authConfig: NextAuthConfig = {
       session.user.role = token.role as AuthorizedUser["role"];
       session.user.permissions = token.permissions as string[];
       session.user.name = token.name as string;
-      session.user.email = token.email as string;
       session.user.avatarUrl = token.avatarUrl as string | null;
 
       return session;

@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isGuardFailure, requireApiPermission } from "@/lib/api/guard";
 import { parsePaginationParams } from "@/lib/api/pagination";
 import { getClientIp } from "@/lib/utils/request";
-import { userSchema } from "@/lib/validations/user.schema";
+import { createUserSchema } from "@/lib/validations/user.schema";
 import { userService, UserServiceError } from "@/services/user.service";
 
 export async function GET(request: NextRequest) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   if (isGuardFailure(guard)) return guard.response;
 
   const body = await request.json();
-  const parsed = userSchema.safeParse(body);
+  const parsed = createUserSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input", fieldErrors: parsed.error.flatten().fieldErrors }, { status: 422 });
   }

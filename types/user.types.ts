@@ -3,7 +3,7 @@ import type { RoleName } from "@/lib/generated/prisma/client";
 export interface UserListItem {
   id: string;
   name: string;
-  email: string;
+  username: string;
   phone: string | null;
   roleId: string;
   roleName: RoleName;

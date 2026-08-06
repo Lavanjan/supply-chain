@@ -12,9 +12,9 @@ export interface UserListFilters {
 }
 
 export const userRepository = {
-  findByEmailWithRole(email: string) {
+  findByUsernameWithRole(username: string) {
     return prisma.user.findFirst({
-      where: { email: email.toLowerCase(), isDeleted: false },
+      where: { username: username.toLowerCase(), isDeleted: false },
       include: {
         role: {
           include: {
@@ -75,7 +75,7 @@ export const userRepository = {
       ...(filters.search && {
         OR: [
           { name: { contains: filters.search, mode: "insensitive" } },
-          { email: { contains: filters.search, mode: "insensitive" } },
+          { username: { contains: filters.search, mode: "insensitive" } },
         ],
       }),
     };
@@ -95,13 +95,13 @@ export const userRepository = {
     return prisma.user.count({ where: this.buildListWhere(filters) });
   },
 
-  findByEmailAny(email: string) {
-    return prisma.user.findFirst({ where: { email: email.toLowerCase() } });
+  findByUsernameAny(username: string) {
+    return prisma.user.findFirst({ where: { username: username.toLowerCase() } });
   },
 
   create(data: {
     name: string;
-    email: string;
+    username: string;
     phone: string | null;
     roleId: string;
     isActive: boolean;
@@ -110,7 +110,7 @@ export const userRepository = {
     return prisma.user.create({
       data: {
         name: data.name,
-        email: data.email.toLowerCase(),
+        username: data.username.toLowerCase(),
         phone: data.phone,
         roleId: data.roleId,
         isActive: data.isActive,
@@ -122,11 +122,11 @@ export const userRepository = {
 
   update(
     id: string,
-    data: { name: string; email: string; phone: string | null; roleId: string; isActive: boolean },
+    data: { name: string; username: string; phone: string | null; roleId: string; isActive: boolean },
   ) {
     return prisma.user.update({
       where: { id },
-      data: { ...data, email: data.email.toLowerCase() },
+      data: { ...data, username: data.username.toLowerCase() },
       include: { role: { select: { id: true, name: true } } },
     });
   },

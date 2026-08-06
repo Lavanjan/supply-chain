@@ -54,14 +54,13 @@ model RolePermission {
 model User {
   id                  String    @id @default(cuid())
   name                String
-  email               String    @unique
+  username            String    @unique
   password            String
   avatarUrl           String?
   phone               String?
   roleId              String
   role                Role      @relation(fields: [roleId], references: [id])
   isActive            Boolean   @default(true)
-  emailVerified       DateTime?
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
   lastLoginAt         DateTime?
@@ -73,7 +72,6 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
-  passwordResetTokens PasswordResetToken[]
   auditLogs           AuditLog[]
   notifications       Notification[]
   inventoryHistories  InventoryHistory[]
@@ -81,19 +79,6 @@ model User {
   @@index([roleId])
   @@index([isDeleted])
   @@map("users")
-}
-
-model PasswordResetToken {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String    @unique
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  @@index([userId])
-  @@map("password_reset_tokens")
 }
 
 // ───────────────────────── Catalog ─────────────────────────

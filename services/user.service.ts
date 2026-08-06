@@ -1,11 +1,7 @@
 import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
 import { userRepository } from "@/repositories/user.repository";
-import { passwordResetTokenRepository } from "@/repositories/password-reset-token.repository";
 import { auditLogRepository } from "@/repositories/audit-log.repository";
-import { emailService } from "@/services/email.service";
-import { PASSWORD_RESET_TOKEN_TTL_MS } from "@/lib/constants/auth";
-import type { UserInput } from "@/lib/validations/user.schema";
+import type { CreateUserInput, UpdateUserInput } from "@/lib/validations/user.schema";
 import type { PaginationParams } from "@/types/api.types";
 import type { RoleOption, UserListItem } from "@/types/user.types";
 import type { RoleName, Prisma } from "@/lib/generated/prisma/client";
@@ -31,7 +27,7 @@ function toListItem(user: UserRow): UserListItem {
   return {
     id: user.id,
     name: user.name,
-    email: user.email,
+    username: user.username,
     phone: user.phone,
     roleId: user.roleId,
     roleName: user.role.name,
@@ -39,16 +35,6 @@ function toListItem(user: UserRow): UserListItem {
     lastLoginAt: user.lastLoginAt ? user.lastLoginAt.toISOString() : null,
     createdAt: user.createdAt.toISOString(),
   };
-}
-
-async function sendSetPasswordInvite(userId: string, email: string, name: string) {
-  await passwordResetTokenRepository.invalidateAllForUser(userId);
-  const token = randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MS);
-  await passwordResetTokenRepository.create(userId, token, expiresAt);
-
-  const setPasswordUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
-  await emailService.sendWelcomeEmail(email, name, setPasswordUrl);
 }
 
 export const userService = {
@@ -72,25 +58,22 @@ export const userService = {
     return userRepository.listRoleOptions();
   },
 
-  async create(input: UserInput, actor: ActorContext): Promise<UserListItem> {
-    const existing = await userRepository.findByEmailAny(input.email);
-    if (existing) {
-      throw new UserServiceError("A user with this email already exists.", 409);
+  async create(input: CreateUserInput, actor: ActorContext): Promise<UserListItem> {
+    const existingUsername = await userRepository.findByUsernameAny(input.username);
+    if (existingUsername) {
+      throw new UserServiceError("A user with this username already exists.", 409);
     }
 
-    const temporaryPassword = randomBytes(24).toString("hex");
-    const passwordHash = await bcrypt.hash(temporaryPassword, 12);
+    const passwordHash = await bcrypt.hash(input.password, 12);
 
     const created = await userRepository.create({
       name: input.name,
-      email: input.email,
+      username: input.username,
       phone: input.phone || null,
       roleId: input.roleId,
       isActive: input.isActive,
       passwordHash,
     });
-
-    await sendSetPasswordInvite(created.id, created.email, created.name);
 
     await auditLogRepository.create({
       userId: actor.userId,
@@ -99,21 +82,21 @@ export const userService = {
       module: "users",
       entityType: "User",
       entityId: created.id,
-      description: `Created user ${created.email} (${created.role.name})`,
+      description: `Created user ${created.username} (${created.role.name})`,
       ipAddress: actor.ipAddress,
     });
 
     return toListItem(created);
   },
 
-  async update(id: string, input: UserInput, actor: ActorContext): Promise<UserListItem> {
+  async update(id: string, input: UpdateUserInput, actor: ActorContext): Promise<UserListItem> {
     const existing = await userRepository.findByIdWithRole(id);
     if (!existing) throw new UserServiceError("User not found.", 404);
 
-    if (input.email.toLowerCase() !== existing.email) {
-      const emailOwner = await userRepository.findByEmailAny(input.email);
-      if (emailOwner && emailOwner.id !== id) {
-        throw new UserServiceError("A user with this email already exists.", 409);
+    if (input.username.toLowerCase() !== existing.username) {
+      const usernameOwner = await userRepository.findByUsernameAny(input.username);
+      if (usernameOwner && usernameOwner.id !== id) {
+        throw new UserServiceError("A user with this username already exists.", 409);
       }
     }
 
@@ -136,7 +119,7 @@ export const userService = {
 
     const updated = await userRepository.update(id, {
       name: input.name,
-      email: input.email,
+      username: input.username,
       phone: input.phone || null,
       roleId: input.roleId,
       isActive: input.isActive,
@@ -149,18 +132,19 @@ export const userService = {
       module: "users",
       entityType: "User",
       entityId: id,
-      description: `Updated user ${updated.email}`,
+      description: `Updated user ${updated.username}`,
       ipAddress: actor.ipAddress,
     });
 
     return toListItem(updated);
   },
 
-  async resendInvite(id: string, actor: ActorContext) {
+  async resetPassword(id: string, newPassword: string, actor: ActorContext) {
     const existing = await userRepository.findByIdWithRole(id);
     if (!existing) throw new UserServiceError("User not found.", 404);
 
-    await sendSetPasswordInvite(existing.id, existing.email, existing.name);
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await userRepository.updatePassword(id, passwordHash);
 
     await auditLogRepository.create({
       userId: actor.userId,
@@ -169,7 +153,7 @@ export const userService = {
       module: "users",
       entityType: "User",
       entityId: id,
-      description: `Sent password reset invite to ${existing.email}`,
+      description: `Reset password for ${existing.username}`,
       ipAddress: actor.ipAddress,
     });
   },
@@ -198,7 +182,7 @@ export const userService = {
       module: "users",
       entityType: "User",
       entityId: id,
-      description: `Deleted user ${existing.email}`,
+      description: `Deleted user ${existing.username}`,
       ipAddress: actor.ipAddress,
     });
   },

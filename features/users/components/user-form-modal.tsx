@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { App, Input, Modal, Select, Switch, Typography } from "antd";
+import { z } from "zod";
+import { App, Input, Select, Switch, Typography } from "antd";
+import { Modal } from "@/components/ui/modal";
 import { FormField } from "@/components/ui/form-field";
-import { userSchema, type UserInput } from "@/lib/validations/user.schema";
+import { passwordRuleSchema } from "@/lib/validations/auth.schema";
+import { createUserSchema, type CreateUserInput } from "@/lib/validations/user.schema";
 import { apiClient, ApiError } from "@/lib/api/client";
 import { useRoleOptions } from "@/features/users/hooks/use-role-options";
 import type { UserListItem } from "@/types/user.types";
@@ -17,20 +20,44 @@ interface UserFormModalProps {
   user?: UserListItem | null;
 }
 
-const DEFAULT_VALUES: UserInput = { name: "", email: "", phone: "", roleId: "", isActive: true };
+const DEFAULT_VALUES: CreateUserInput = {
+  name: "",
+  username: "",
+  phone: "",
+  roleId: "",
+  isActive: true,
+  password: "",
+};
 
 export function UserFormModal({ open, onClose, onSuccess, user }: UserFormModalProps) {
   const { message } = App.useApp();
   const { roles, loading: rolesLoading } = useRoleOptions();
   const isEdit = Boolean(user);
 
+  // Password is only required (and validated) on create — the field itself is hidden in
+  // edit mode — but the form's value type must stay identical across both modes, so the
+  // requirement is applied via superRefine rather than swapping to a differently-shaped schema.
+  const formSchema = useMemo(
+    () =>
+      createUserSchema.omit({ password: true }).extend({ password: z.string() }).superRefine((data, ctx) => {
+        if (isEdit) return;
+        const result = passwordRuleSchema.safeParse(data.password);
+        if (!result.success) {
+          for (const issue of result.error.issues) {
+            ctx.addIssue({ ...issue, path: ["password"] });
+          }
+        }
+      }),
+    [isEdit],
+  );
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<UserInput>({
-    resolver: zodResolver(userSchema),
+  } = useForm<CreateUserInput>({
+    resolver: zodResolver(formSchema),
     defaultValues: DEFAULT_VALUES,
   });
 
@@ -38,20 +65,28 @@ export function UserFormModal({ open, onClose, onSuccess, user }: UserFormModalP
     if (open) {
       reset(
         user
-          ? { name: user.name, email: user.email, phone: user.phone ?? "", roleId: user.roleId, isActive: user.isActive }
+          ? {
+              name: user.name,
+              username: user.username,
+              phone: user.phone ?? "",
+              roleId: user.roleId,
+              isActive: user.isActive,
+              password: "",
+            }
           : DEFAULT_VALUES,
       );
     }
   }, [open, user, reset]);
 
-  async function onSubmit(values: UserInput) {
+  async function onSubmit(values: CreateUserInput) {
     try {
       if (isEdit && user) {
-        await apiClient.patch(`/api/users/${user.id}`, values);
+        const { password: _password, ...updateValues } = values;
+        await apiClient.patch(`/api/users/${user.id}`, updateValues);
         message.success("User updated");
       } else {
         await apiClient.post("/api/users", values);
-        message.success("User created — an invite email has been sent to set their password");
+        message.success("User created");
       }
       onSuccess();
       onClose();
@@ -75,9 +110,24 @@ export function UserFormModal({ open, onClose, onSuccess, user }: UserFormModalP
           {(field) => <Input {...field} status={errors.name ? "error" : ""} placeholder="e.g. Jane Doe" />}
         </FormField>
 
-        <FormField control={control} name="email" label="Email" required>
-          {(field) => <Input {...field} status={errors.email ? "error" : ""} placeholder="jane@company.com" />}
+        <FormField control={control} name="username" label="Username" required>
+          {(field) => (
+            <Input {...field} status={errors.username ? "error" : ""} placeholder="e.g. jane.doe" autoComplete="off" />
+          )}
         </FormField>
+
+        {!isEdit && (
+          <FormField control={control} name="password" label="Password" required>
+            {(field) => (
+              <Input.Password
+                {...field}
+                status={errors.password ? "error" : ""}
+                placeholder="••••••••"
+                autoComplete="new-password"
+              />
+            )}
+          </FormField>
+        )}
 
         <FormField control={control} name="phone" label="Phone">
           {(field) => <Input {...field} placeholder="Optional" />}
@@ -105,12 +155,6 @@ export function UserFormModal({ open, onClose, onSuccess, user }: UserFormModalP
             </div>
           )}
         </FormField>
-
-        {!isEdit && (
-          <Typography.Text type="secondary" className="text-xs block -mt-2">
-            The new user will receive an email with a link to set their own password.
-          </Typography.Text>
-        )}
       </form>
     </Modal>
   );

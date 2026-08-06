@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isGuardFailure, requireApiPermission } from "@/lib/api/guard";
 import { getClientIp } from "@/lib/utils/request";
-import { userSchema } from "@/lib/validations/user.schema";
+import { updateUserSchema } from "@/lib/validations/user.schema";
 import { userService, UserServiceError } from "@/services/user.service";
 
 interface RouteParams {
@@ -14,7 +14,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
   const { id } = await params;
   const body = await request.json();
-  const parsed = userSchema.safeParse(body);
+  const parsed = updateUserSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input", fieldErrors: parsed.error.flatten().fieldErrors }, { status: 422 });
   }

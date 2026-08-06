@@ -1,4 +1,4 @@
-export const PUBLIC_ROUTES = ["/login", "/forgot-password", "/reset-password"];
+export const PUBLIC_ROUTES = ["/login"];
 
 export const DEFAULT_LOGIN_REDIRECT = "/dashboard";
 

@@ -61,26 +61,25 @@ async function seedRoles() {
 }
 
 async function seedAdminUser() {
-  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@supplychain.local";
+  const adminUsername = process.env.SEED_ADMIN_USERNAME ?? "admin";
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "Admin@12345";
 
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { name: "ADMIN" } });
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
   await prisma.user.upsert({
-    where: { email: adminEmail },
+    where: { username: adminUsername },
     update: {},
     create: {
       name: "System Administrator",
-      email: adminEmail,
+      username: adminUsername,
       password: passwordHash,
       roleId: adminRole.id,
       isActive: true,
-      emailVerified: new Date(),
     },
   });
 
-  console.log(`Admin user ready: ${adminEmail}`);
+  console.log(`Admin user ready: ${adminUsername}`);
   if (!process.env.SEED_ADMIN_PASSWORD) {
     console.log(`Default password: ${adminPassword} (change this immediately after first login)`);
   }

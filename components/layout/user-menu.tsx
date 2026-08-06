@@ -11,7 +11,7 @@ export function UserMenu() {
 
   if (!session?.user) return null;
 
-  const { name, email, role, avatarUrl } = session.user;
+  const { name, role, avatarUrl } = session.user;
 
   const items: MenuProps["items"] = [
     {
@@ -20,9 +20,6 @@ export function UserMenu() {
         <div className="px-1 py-1">
           <Typography.Text strong className="block">
             {name}
-          </Typography.Text>
-          <Typography.Text type="secondary" className="text-xs block">
-            {email}
           </Typography.Text>
           <Tag color={role === "ADMIN" ? "blue" : "green"} className="mt-1">
             {role === "ADMIN" ? t("roleAdministrator") : t("roleManager")}

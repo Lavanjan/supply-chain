@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { App, Button, Card, Checkbox, Input, Typography } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useTranslations } from "next-intl";
 import { FormField } from "@/components/ui/form-field";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth.schema";
@@ -26,7 +26,7 @@ export function LoginForm() {
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "", remember: false },
+    defaultValues: { username: "", password: "", remember: false },
   });
 
   const urlErrorMessage = resolveLoginErrorMessage(searchParams.get("code"), t);
@@ -35,7 +35,7 @@ export function LoginForm() {
     setSubmitting(true);
     try {
       const result = await signIn("credentials", {
-        email: values.email,
+        username: values.username,
         password: values.password,
         remember: String(values.remember),
         redirect: false,
@@ -73,15 +73,15 @@ export function LoginForm() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FormField control={control} name="email" label={t("emailLabel")} required>
+        <FormField control={control} name="username" label={t("usernameLabel")} required>
           {(field) => (
             <Input
               {...field}
-              type="email"
-              autoComplete="email"
-              prefix={<MailOutlined className="text-neutral-400" />}
-              placeholder={t("emailPlaceholder")}
-              status={errors.email ? "error" : ""}
+              type="text"
+              autoComplete="username"
+              prefix={<UserOutlined className="text-neutral-400" />}
+              placeholder={t("usernamePlaceholder")}
+              status={errors.username ? "error" : ""}
             />
           )}
         </FormField>
@@ -106,9 +106,6 @@ export function LoginForm() {
               </Checkbox>
             )}
           </FormField>
-          <a href="/forgot-password" className="text-sm text-blue-600 hover:underline">
-            {t("forgotPassword")}
-          </a>
         </div>
 
         <Button type="primary" htmlType="submit" block loading={submitting}>

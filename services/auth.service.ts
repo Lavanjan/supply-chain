@@ -1,28 +1,20 @@
 import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
 import { userRepository } from "@/repositories/user.repository";
-import { passwordResetTokenRepository } from "@/repositories/password-reset-token.repository";
 import { auditLogRepository } from "@/repositories/audit-log.repository";
-import { emailService } from "@/services/email.service";
 import {
   AccountInactiveError,
   AccountLockedError,
   InvalidCredentialsError,
 } from "@/lib/auth/errors";
-import {
-  ACCOUNT_LOCK_DURATION_MS,
-  MAX_FAILED_LOGIN_ATTEMPTS,
-  PASSWORD_RESET_TOKEN_TTL_MS,
-} from "@/lib/constants/auth";
+import { ACCOUNT_LOCK_DURATION_MS, MAX_FAILED_LOGIN_ATTEMPTS } from "@/lib/constants/auth";
 import type { AuthorizedUser } from "@/types/rbac.types";
 
-type UserWithRole = NonNullable<Awaited<ReturnType<typeof userRepository.findByEmailWithRole>>>;
+type UserWithRole = NonNullable<Awaited<ReturnType<typeof userRepository.findByUsernameWithRole>>>;
 
 function toAuthorizedUser(user: UserWithRole): AuthorizedUser {
   return {
     id: user.id,
     name: user.name,
-    email: user.email,
     avatarUrl: user.avatarUrl,
     role: user.role.name,
     permissions: user.role.permissions.map((rolePermission) => rolePermission.permission.code),
@@ -31,11 +23,11 @@ function toAuthorizedUser(user: UserWithRole): AuthorizedUser {
 
 export const authService = {
   async validateCredentials(
-    email: string,
+    username: string,
     password: string,
     ip: string | null,
   ): Promise<AuthorizedUser> {
-    const user = await userRepository.findByEmailWithRole(email);
+    const user = await userRepository.findByUsernameWithRole(username);
 
     if (!user) {
       throw new InvalidCredentialsError();
@@ -85,49 +77,5 @@ export const authService = {
     });
 
     return toAuthorizedUser(user);
-  },
-
-  async requestPasswordReset(email: string, ip: string | null) {
-    const user = await userRepository.findByEmailWithRole(email);
-
-    if (!user) return;
-
-    await passwordResetTokenRepository.invalidateAllForUser(user.id);
-
-    const token = randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MS);
-    await passwordResetTokenRepository.create(user.id, token, expiresAt);
-
-    const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
-    await emailService.sendPasswordResetEmail(user.email, resetUrl);
-
-    await auditLogRepository.create({
-      userId: user.id,
-      userName: user.name,
-      action: "UPDATE",
-      module: "auth",
-      description: "Password reset requested",
-      ipAddress: ip,
-    });
-  },
-
-  async resetPassword(token: string, newPassword: string) {
-    const resetToken = await passwordResetTokenRepository.findValidByToken(token);
-
-    if (!resetToken) {
-      throw new Error("This password reset link is invalid or has expired.");
-    }
-
-    const passwordHash = await bcrypt.hash(newPassword, 12);
-    await userRepository.updatePassword(resetToken.userId, passwordHash);
-    await passwordResetTokenRepository.markUsed(resetToken.id);
-
-    await auditLogRepository.create({
-      userId: resetToken.userId,
-      userName: resetToken.user.name,
-      action: "UPDATE",
-      module: "auth",
-      description: "Password reset completed",
-    });
   },
 };

@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Dashboard" };
 export default async function DashboardPage() {
   const session = await requireSession();
   const { user } = session;
-  const firstName = (user.name ?? user.email ?? "").split(" ")[0] ?? "";
+  const firstName = (user.name ?? "").split(" ")[0] ?? "";
 
   const [stats, recentActivities, recentOrders, notificationSummary] = await Promise.all([
     dashboardService.getStats(),

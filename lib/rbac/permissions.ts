@@ -33,7 +33,6 @@ export async function requirePermission(code: string) {
 export function sessionUserToAuthorizedUser(user: {
   id: string;
   name?: string | null;
-  email?: string | null;
   role: AuthorizedUser["role"];
   permissions: string[];
   avatarUrl: string | null;
@@ -41,7 +40,6 @@ export function sessionUserToAuthorizedUser(user: {
   return {
     id: user.id,
     name: user.name ?? "",
-    email: user.email ?? "",
     avatarUrl: user.avatarUrl,
     role: user.role,
     permissions: user.permissions,

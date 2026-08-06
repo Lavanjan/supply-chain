@@ -11,20 +11,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
         remember: { label: "Remember me", type: "text" },
       },
       async authorize(credentials, request) {
-        const email = typeof credentials?.email === "string" ? credentials.email : "";
+        const username = typeof credentials?.username === "string" ? credentials.username : "";
         const password = typeof credentials?.password === "string" ? credentials.password : "";
 
-        if (!email || !password) {
+        if (!username || !password) {
           throw new InvalidCredentialsError();
         }
 
         const ip = getClientIp(request);
-        const user = await authService.validateCredentials(email, password, ip);
+        const user = await authService.validateCredentials(username, password, ip);
 
         return {
           ...user,

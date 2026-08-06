@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { App, Button, Card, Select, Tag, Tooltip, Typography, type TableColumnsType } from "antd";
-import { DeleteOutlined, EditOutlined, MailOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, KeyOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DataTable } from "@/components/ui/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { usePermission } from "@/hooks/use-permission";
 import { apiClient, ApiError } from "@/lib/api/client";
 import { UserFormModal } from "@/features/users/components/user-form-modal";
+import { ResetPasswordModal } from "@/features/users/components/reset-password-modal";
 import { useRoleOptions } from "@/features/users/hooks/use-role-options";
 import type { UserListItem } from "@/types/user.types";
 
@@ -26,6 +27,7 @@ export function UserTable() {
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<UserListItem | null>(null);
+  const [resettingUser, setResettingUser] = useState<UserListItem | null>(null);
 
   function openCreate() {
     setEditing(null);
@@ -35,15 +37,6 @@ export function UserTable() {
   function openEdit(user: UserListItem) {
     setEditing(user);
     setModalOpen(true);
-  }
-
-  async function resendInvite(user: UserListItem) {
-    try {
-      await apiClient.post(`/api/users/${user.id}/resend-invite`, {});
-      message.success(`Invite email sent to ${user.email}`);
-    } catch (error) {
-      message.error(error instanceof ApiError ? error.message : "Unable to send invite");
-    }
   }
 
   function confirmDelete(user: UserListItem) {
@@ -77,7 +70,7 @@ export function UserTable() {
         </div>
       ),
     },
-    { title: "Email", dataIndex: "email" },
+    { title: "Username", dataIndex: "username" },
     {
       title: "Role",
       dataIndex: "roleName",
@@ -101,8 +94,8 @@ export function UserTable() {
       render: (_, record) => (
         <div className="flex justify-end gap-1">
           {can("users.update") && (
-            <Tooltip title="Resend set-password invite">
-              <Button type="text" icon={<MailOutlined />} onClick={() => resendInvite(record)} />
+            <Tooltip title="Reset password">
+              <Button type="text" icon={<KeyOutlined />} onClick={() => setResettingUser(record)} />
             </Tooltip>
           )}
           {can("users.update") && <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(record)} />}
@@ -127,7 +120,7 @@ export function UserTable() {
         onPageChange={table.setPage}
         searchValue={table.searchInput}
         onSearchChange={table.setSearchInput}
-        searchPlaceholder="Search name or email..."
+        searchPlaceholder="Search name or username..."
         onSortChange={table.setSort}
         emptyText="No users yet"
         filters={
@@ -167,7 +160,7 @@ export function UserTable() {
                 <Typography.Text strong className="block">
                   {user.name} {user.id === session?.user.id && <Tag className="ml-1">You</Tag>}
                 </Typography.Text>
-                <span className="text-xs text-neutral-500">{user.email}</span>
+                <span className="text-xs text-neutral-500">{user.username}</span>
               </div>
               <div className="flex flex-col items-end gap-1">
                 <Tag color={user.roleName === "ADMIN" ? "purple" : "blue"}>{user.roleName === "ADMIN" ? "Admin" : "Manager"}</Tag>
@@ -176,7 +169,7 @@ export function UserTable() {
             </div>
             <div className="flex justify-end gap-1 mt-2">
               {can("users.update") && (
-                <Button type="text" icon={<MailOutlined />} onClick={() => resendInvite(user)} />
+                <Button type="text" icon={<KeyOutlined />} onClick={() => setResettingUser(user)} />
               )}
               {can("users.update") && (
                 <Button type="text" icon={<EditOutlined />} onClick={() => openEdit(user)} />
@@ -190,6 +183,7 @@ export function UserTable() {
       />
 
       <UserFormModal open={modalOpen} onClose={() => setModalOpen(false)} onSuccess={table.reload} user={editing} />
+      <ResetPasswordModal open={resettingUser !== null} onClose={() => setResettingUser(null)} user={resettingUser} />
     </>
   );
 }
