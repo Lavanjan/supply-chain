@@ -157,7 +157,7 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         <HeroStat
           icon={<ShoppingOutlined />}
           label={t("totalProducts")}
@@ -186,16 +186,9 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
           subtitle={t("allTimeOrders")}
           accent={categorical[6]}
         />
-        <HeroStat
-          icon={<CarOutlined />}
-          label={t("todaysDeliveries")}
-          value={formatNumber(stats.todaysDeliveriesCount)}
-          subtitle={t("scheduledToday")}
-          accent={categorical[2]}
-        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
         <div className="lg:col-span-2">
           <StockHealthCard
             totalProducts={stats.totalProducts}
@@ -205,6 +198,7 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
         </div>
         <CompactStat icon={<ShopOutlined />} label={t("suppliers")} value={formatNumber(stats.supplierCount)} />
         <CompactStat icon={<TeamOutlined />} label={t("customers")} value={formatNumber(stats.customerCount)} />
+        <CompactStat icon={<CarOutlined />} label={t("todaysDeliveries")} value={formatNumber(stats.todaysDeliveriesCount)} />
       </div>
     </div>
   );
