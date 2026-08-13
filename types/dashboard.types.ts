@@ -2,6 +2,7 @@ export interface DashboardStats {
   totalProducts: number;
   currentInventoryUnits: number;
   inventoryValue: number;
+  totalRevenue: number;
   lowStockCount: number;
   outOfStockCount: number;
   supplierCount: number;

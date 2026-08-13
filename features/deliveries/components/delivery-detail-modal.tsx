@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/modal";
 import { CarOutlined, CloseOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { apiClient, ApiError } from "@/lib/api/client";
+import { formatCurrency } from "@/lib/utils/format";
 import { usePermission } from "@/hooks/use-permission";
 import { DeliveryFormModal } from "@/features/deliveries/components/delivery-form-modal";
 import type { DeliveryDetail as DeliveryDetailType } from "@/types/delivery.types";
@@ -196,8 +197,27 @@ export function DeliveryDetailModal({ open, id, onClose, onChanged }: DeliveryDe
                     align: "right",
                     render: (_, item) => `${item.quantity} ${item.unitSymbol}`,
                   },
+                  {
+                    title: "Unit Price",
+                    key: "unitPrice",
+                    align: "right",
+                    render: (_, item) => formatCurrency(item.unitPrice),
+                  },
+                  {
+                    title: "Total",
+                    key: "total",
+                    align: "right",
+                    render: (_, item) => <span className="font-medium">{formatCurrency(item.totalPrice)}</span>,
+                  },
                 ]}
               />
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <div className="w-full sm:w-72 flex justify-between text-base font-semibold border-t border-black/10 dark:border-white/10 pt-2">
+                <span>Delivery Total</span>
+                <span>{formatCurrency(delivery.totalAmount)}</span>
+              </div>
             </div>
           </Card>
 

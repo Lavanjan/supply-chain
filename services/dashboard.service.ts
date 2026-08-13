@@ -37,6 +37,7 @@ async function getStats(): Promise<DashboardStats> {
     customerCount,
     purchaseOrderCount,
     todaysDeliveriesCount,
+    totalRevenue,
   ] = await Promise.all([
     dashboardRepository.countProducts(),
     dashboardRepository.getProductStockSnapshot(),
@@ -44,6 +45,7 @@ async function getStats(): Promise<DashboardStats> {
     dashboardRepository.countCustomers(),
     dashboardRepository.countPurchaseOrders(),
     dashboardRepository.countTodaysDeliveries(),
+    dashboardRepository.getTotalRevenue(),
   ]);
 
   let currentInventoryUnits = 0;
@@ -70,6 +72,7 @@ async function getStats(): Promise<DashboardStats> {
     totalProducts,
     currentInventoryUnits,
     inventoryValue,
+    totalRevenue,
     lowStockCount,
     outOfStockCount,
     supplierCount,

@@ -13,6 +13,7 @@ export async function GET() {
       name: product.name,
       sku: product.sku,
       purchasePrice: Number(product.purchasePrice),
+      sellingPrice: Number(product.sellingPrice),
       unitSymbol: product.unit.symbol,
     })),
   );

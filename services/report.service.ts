@@ -1,5 +1,6 @@
 import {
   reportRepository,
+  type DateRangeFilters,
   type DeliveryReportFilters,
   type InventoryReportFilters,
   type PurchaseReportFilters,
@@ -12,10 +13,16 @@ import type {
   DeliveryStatusPoint,
   InventoryReportRow,
   InventoryReportSummary,
+  MonthlyRevenuePoint,
   MonthlySpendPoint,
+  ProfitChartPoint,
+  ProfitReportRow,
+  ProfitReportSummary,
   PurchaseReportRow,
   PurchaseReportSummary,
   ReportResult,
+  SalesReportRow,
+  SalesReportSummary,
   StockMovementPoint,
   StockMovementReportRow,
   StockMovementSummary,
@@ -218,6 +225,114 @@ async function getDeliveryReport(
   };
 }
 
+async function getSalesReport(
+  filters: DeliveryReportFilters & { search?: string },
+  page: PageParams,
+): Promise<ReportResult<SalesReportRow, SalesReportSummary, MonthlyRevenuePoint>> {
+  const deliveries = await reportRepository.getDeliveries(filters);
+
+  const allRows: SalesReportRow[] = deliveries
+    .map((delivery) => ({
+      id: delivery.id,
+      deliveryNumber: delivery.deliveryNumber,
+      customerName: delivery.customer.companyName,
+      scheduledDate: delivery.scheduledDate.toISOString(),
+      status: delivery.status,
+      itemCount: delivery._count.items,
+      totalAmount: Number(delivery.totalAmount),
+    }))
+    .filter((row) => matchesSearch(filters.search, row.deliveryNumber, row.customerName));
+
+  const nonCancelled = allRows.filter((row) => row.status !== "CANCELLED");
+  const totalRevenue = round2(nonCancelled.reduce((sum, row) => sum + row.totalAmount, 0));
+
+  const summary: SalesReportSummary = {
+    totalDeliveries: allRows.length,
+    totalRevenue,
+    averageDeliveryValue: nonCancelled.length > 0 ? round2(totalRevenue / nonCancelled.length) : 0,
+    deliveredCount: allRows.filter((row) => row.status === "DELIVERED").length,
+  };
+
+  const buckets = new Map<string, { label: string; total: number }>();
+  const cursor = new Date();
+  cursor.setDate(1);
+  cursor.setHours(0, 0, 0, 0);
+  cursor.setMonth(cursor.getMonth() - (CATEGORY_CHART_MONTHS - 1));
+  for (let i = 0; i < CATEGORY_CHART_MONTHS; i++) {
+    buckets.set(monthKey(cursor), { label: monthLabel(cursor), total: 0 });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  for (const row of allRows) {
+    if (row.status === "CANCELLED") continue;
+    const bucket = buckets.get(monthKey(new Date(row.scheduledDate)));
+    if (bucket) bucket.total += row.totalAmount;
+  }
+  const chart: MonthlyRevenuePoint[] = Array.from(buckets.values()).map((bucket) => ({
+    month: bucket.label,
+    total: round2(bucket.total),
+  }));
+
+  return {
+    data: paginate(allRows, page),
+    total: allRows.length,
+    page: page.page,
+    pageSize: page.pageSize,
+    summary,
+    chart,
+  };
+}
+
+async function getProfitReport(filters: DateRangeFilters): Promise<{
+  summary: ProfitReportSummary;
+  chart: ProfitChartPoint[];
+  rows: ProfitReportRow[];
+}> {
+  const items = await reportRepository.getDeliveryItemsForProfit(filters);
+
+  const buckets = new Map<string, { label: string; revenue: number; cost: number }>();
+  const cursor = new Date();
+  cursor.setDate(1);
+  cursor.setHours(0, 0, 0, 0);
+  cursor.setMonth(cursor.getMonth() - (CATEGORY_CHART_MONTHS - 1));
+  for (let i = 0; i < CATEGORY_CHART_MONTHS; i++) {
+    buckets.set(monthKey(cursor), { label: monthLabel(cursor), revenue: 0, cost: 0 });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  for (const item of items) {
+    const bucket = buckets.get(monthKey(item.delivery.scheduledDate));
+    if (!bucket) continue;
+    const quantity = Number(item.quantity);
+    bucket.revenue += quantity * Number(item.unitPrice);
+    bucket.cost += quantity * Number(item.product.purchasePrice);
+  }
+
+  function marginOf(revenue: number, cost: number): number {
+    return revenue > 0 ? round2(((revenue - cost) / revenue) * 100) : 0;
+  }
+
+  const rows: ProfitReportRow[] = Array.from(buckets.values()).map((bucket) => ({
+    month: bucket.label,
+    revenue: round2(bucket.revenue),
+    costOfGoods: round2(bucket.cost),
+    profit: round2(bucket.revenue - bucket.cost),
+    marginPercent: marginOf(bucket.revenue, bucket.cost),
+  }));
+
+  const chart: ProfitChartPoint[] = rows.map((row) => ({ month: row.month, revenue: row.revenue, cost: row.costOfGoods }));
+
+  const totalRevenue = round2(rows.reduce((sum, row) => sum + row.revenue, 0));
+  const totalCostOfGoods = round2(rows.reduce((sum, row) => sum + row.costOfGoods, 0));
+  const summary: ProfitReportSummary = {
+    totalRevenue,
+    totalCostOfGoods,
+    grossProfit: round2(totalRevenue - totalCostOfGoods),
+    marginPercent: marginOf(totalRevenue, totalCostOfGoods),
+  };
+
+  return { summary, chart, rows };
+}
+
 async function getStockMovementReport(
   filters: StockMovementReportFilters & { search?: string },
   page: PageParams,
@@ -276,5 +391,7 @@ export const reportService = {
   getInventoryReport,
   getPurchaseReport,
   getDeliveryReport,
+  getSalesReport,
+  getProfitReport,
   getStockMovementReport,
 };

@@ -52,6 +52,14 @@ export const dashboardRepository = {
     });
   },
 
+  async getTotalRevenue() {
+    const result = await prisma.delivery.aggregate({
+      where: { isDeleted: false, status: { not: "CANCELLED" } },
+      _sum: { totalAmount: true },
+    });
+    return Number(result._sum.totalAmount ?? 0);
+  },
+
   getRecentPurchaseOrdersForMonthlyTotals() {
     const since = new Date();
     since.setMonth(since.getMonth() - (MONTHLY_PURCHASES_MONTHS - 1));

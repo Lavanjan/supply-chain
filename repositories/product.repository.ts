@@ -107,6 +107,7 @@ export const productRepository = {
         name: true,
         sku: true,
         purchasePrice: true,
+        sellingPrice: true,
         unit: { select: { symbol: true } },
       },
       orderBy: { name: "asc" },

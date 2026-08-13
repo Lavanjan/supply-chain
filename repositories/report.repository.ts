@@ -102,9 +102,33 @@ export const reportRepository = {
         scheduledDate: true,
         deliveredDate: true,
         status: true,
+        totalAmount: true,
         customer: { select: { companyName: true } },
         warehouse: { select: { name: true } },
         _count: { select: { items: true } },
+      },
+    });
+  },
+
+  getDeliveryItemsForProfit(filters: DateRangeFilters) {
+    return prisma.deliveryItem.findMany({
+      where: {
+        delivery: {
+          isDeleted: false,
+          status: { not: "CANCELLED" },
+          ...((filters.dateFrom || filters.dateTo) && {
+            scheduledDate: {
+              ...(filters.dateFrom && { gte: filters.dateFrom }),
+              ...(filters.dateTo && { lte: filters.dateTo }),
+            },
+          }),
+        },
+      },
+      select: {
+        quantity: true,
+        unitPrice: true,
+        delivery: { select: { scheduledDate: true } },
+        product: { select: { purchasePrice: true } },
       },
     });
   },

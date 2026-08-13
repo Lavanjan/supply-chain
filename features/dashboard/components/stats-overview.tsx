@@ -6,6 +6,7 @@ import {
   CarOutlined,
   DollarOutlined,
   FileTextOutlined,
+  RiseOutlined,
   ShopOutlined,
   ShoppingOutlined,
   TeamOutlined,
@@ -156,7 +157,7 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
         <HeroStat
           icon={<ShoppingOutlined />}
           label={t("totalProducts")}
@@ -170,6 +171,13 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
           value={formatCompactCurrency(stats.inventoryValue)}
           subtitle={t("acrossWarehouses")}
           accent={categorical[1]}
+        />
+        <HeroStat
+          icon={<RiseOutlined />}
+          label={t("totalRevenue")}
+          value={formatCompactCurrency(stats.totalRevenue)}
+          subtitle={t("fromDeliveries")}
+          accent={categorical[5]}
         />
         <HeroStat
           icon={<FileTextOutlined />}

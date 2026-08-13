@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import { FormField } from "@/components/ui/form-field";
 import { deliverySchema, type DeliveryInput } from "@/lib/validations/delivery.schema";
 import { apiClient, ApiError } from "@/lib/api/client";
-import { formatNumber } from "@/lib/utils/format";
+import { formatCurrency, formatNumber } from "@/lib/utils/format";
 import { useDeliveryOptions } from "@/features/deliveries/hooks/use-delivery-options";
 import type { DeliveryDetail } from "@/types/delivery.types";
 import type { InventoryBatchOption } from "@/types/inventory.types";
@@ -23,7 +23,7 @@ interface DeliveryFormModalProps {
   delivery?: DeliveryDetail | null;
 }
 
-const EMPTY_ITEM = { productId: "", quantity: 1 };
+const EMPTY_ITEM = { productId: "", quantity: 1, unitPrice: 0 };
 
 function defaultValuesFrom(delivery?: DeliveryDetail | null): DeliveryInput {
   if (!delivery) {
@@ -46,7 +46,11 @@ function defaultValuesFrom(delivery?: DeliveryDetail | null): DeliveryInput {
     scheduledDate: delivery.scheduledDate,
     deliveryAddress: delivery.deliveryAddress ?? "",
     notes: delivery.notes ?? "",
-    items: delivery.items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+    items: delivery.items.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+    })),
   };
 }
 
@@ -76,6 +80,9 @@ export function DeliveryFormModal({ open, onClose, onSuccess, onCreated, deliver
   const { fields, append, remove } = useFieldArray({ control, name: "items" });
   const items = watch("items");
   const warehouseId = watch("warehouseId");
+
+  const lineTotals = items.map((item) => Math.round((item.quantity || 0) * (item.unitPrice || 0) * 100) / 100);
+  const deliveryTotal = lineTotals.reduce((sum, total) => sum + total, 0);
 
   const [stockByProduct, setStockByProduct] = useState<Record<string, number>>({});
   const [stockLoading, setStockLoading] = useState<Record<string, boolean>>({});
@@ -266,6 +273,8 @@ export function DeliveryFormModal({ open, onClose, onSuccess, onCreated, deliver
                           onChange={(value) => {
                             field.onChange(value);
                             if (warehouseId) loadAvailableStock(value, warehouseId);
+                            const product = products.find((p) => p.id === value);
+                            if (product) setValue(`items.${index}.unitPrice`, product.sellingPrice);
                           }}
                           options={products.map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
                           className="w-full"
@@ -273,6 +282,32 @@ export function DeliveryFormModal({ open, onClose, onSuccess, onCreated, deliver
                       )}
                     </FormField>
                   ),
+                },
+                {
+                  title: "Unit Price",
+                  key: "unitPrice",
+                  width: 130,
+                  render: (_, __, index) => (
+                    <FormField control={control} name={`items.${index}.unitPrice`} className="!mb-0">
+                      {(field) => (
+                        <InputNumber
+                          {...field}
+                          min={0}
+                          precision={2}
+                          prefix="LKR"
+                          className="w-full"
+                          status={errors.items?.[index]?.unitPrice ? "error" : ""}
+                        />
+                      )}
+                    </FormField>
+                  ),
+                },
+                {
+                  title: "Total",
+                  key: "total",
+                  width: 110,
+                  align: "right",
+                  render: (_, __, index) => <span className="font-medium">{formatCurrency(lineTotals[index] ?? 0)}</span>,
                 },
                 {
                   title: "Quantity",
@@ -317,6 +352,13 @@ export function DeliveryFormModal({ open, onClose, onSuccess, onCreated, deliver
                 },
               ]}
             />
+          </div>
+
+          <div className="flex justify-end mt-4">
+            <div className="w-full sm:w-72 flex justify-between text-base font-semibold border-t border-black/10 dark:border-white/10 pt-2">
+              <span>Delivery Total</span>
+              <span>{formatCurrency(deliveryTotal)}</span>
+            </div>
           </div>
         </Card>
       </form>

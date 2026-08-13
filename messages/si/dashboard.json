@@ -9,6 +9,8 @@
     "totalProducts": "මුළු නිෂ්පාදන ගණන",
     "currentInventory": "වත්මන් තොග",
     "inventoryValue": "තොග වටිනාකම",
+    "totalRevenue": "මුළු ආදායම",
+    "fromDeliveries": "බෙදාහැරීම් වලින්",
     "lowStock": "අඩු තොග",
     "outOfStock": "තොග අවසන්",
     "suppliers": "සැපයුම්කරුවන්",

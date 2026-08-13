@@ -79,6 +79,49 @@ export interface DeliveryStatusPoint {
   count: number;
 }
 
+export interface SalesReportRow {
+  id: string;
+  deliveryNumber: string;
+  customerName: string;
+  scheduledDate: string;
+  status: string;
+  itemCount: number;
+  totalAmount: number;
+}
+
+export interface SalesReportSummary {
+  totalDeliveries: number;
+  totalRevenue: number;
+  averageDeliveryValue: number;
+  deliveredCount: number;
+}
+
+export interface MonthlyRevenuePoint {
+  month: string;
+  total: number;
+}
+
+export interface ProfitReportRow {
+  month: string;
+  revenue: number;
+  costOfGoods: number;
+  profit: number;
+  marginPercent: number;
+}
+
+export interface ProfitReportSummary {
+  totalRevenue: number;
+  totalCostOfGoods: number;
+  grossProfit: number;
+  marginPercent: number;
+}
+
+export interface ProfitChartPoint {
+  month: string;
+  revenue: number;
+  cost: number;
+}
+
 export interface StockMovementReportRow {
   id: string;
   date: string;
