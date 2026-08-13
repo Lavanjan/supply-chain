@@ -321,24 +321,29 @@ export const purchaseOrderService = {
       supplierName: row.supplier.companyName,
       warehouseId: row.warehouseId,
       warehouseName: row.warehouse.name,
-      items: row.items.map((item) => {
-        const previouslyReceivedQuantity = item.grnItems.reduce(
-          (sum, grnItem) => sum + Number(grnItem.receivedQuantity),
-          0,
-        );
-        const orderedQuantity = Number(item.quantity);
-        return {
-          purchaseItemId: item.id,
-          productId: item.productId,
-          productName: item.product.name,
-          sku: item.product.sku,
-          unitSymbol: item.product.unit.symbol,
-          orderedQuantity,
-          previouslyReceivedQuantity,
-          remainingQuantity: Math.max(0, round2(orderedQuantity - previouslyReceivedQuantity)),
-          unitPrice: Number(item.unitPrice),
-        };
-      }),
+      items: row.items
+        .map((item) => {
+          const previouslyReceivedQuantity = item.grnItems.reduce(
+            (sum, grnItem) => sum + Number(grnItem.receivedQuantity),
+            0,
+          );
+          const orderedQuantity = Number(item.quantity);
+          return {
+            purchaseItemId: item.id,
+            productId: item.productId,
+            productName: item.product.name,
+            sku: item.product.sku,
+            unitSymbol: item.product.unit.symbol,
+            orderedQuantity,
+            previouslyReceivedQuantity,
+            remainingQuantity: Math.max(0, round2(orderedQuantity - previouslyReceivedQuantity)),
+            unitPrice: Number(item.unitPrice),
+          };
+        })
+        // Items already fully received in a prior GRN have nothing left to
+        // receive against this PO — leaving them in would let someone
+        // re-receive stock that's already accounted for.
+        .filter((item) => item.remainingQuantity > 0),
     };
   },
 };
