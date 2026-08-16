@@ -104,14 +104,19 @@ export function StockOutModal({ open, onClose, onSuccess }: StockOutModalProps) 
           )}
         </FormField>
 
-        <FormField control={control} name="inventoryId" label="Batch" required>
+        <FormField control={control} name="inventoryId" label="Batch">
           {(field) => (
             <Select
               {...field}
+              allowClear
               loading={batchesLoading}
               disabled={!productId || !warehouseId}
               status={errors.inventoryId ? "error" : ""}
-              placeholder={!productId || !warehouseId ? "Select product & warehouse first" : "Select batch"}
+              placeholder={
+                !productId || !warehouseId
+                  ? "Select product & warehouse first"
+                  : "Optional — leave blank to remove oldest stock first"
+              }
               options={batches.map((batch) => ({ value: batch.inventoryId, label: batchLabel(batch) }))}
               notFoundContent={!batchesLoading && "No stock available here"}
             />
@@ -130,13 +135,23 @@ export function StockOutModal({ open, onClose, onSuccess }: StockOutModalProps) 
           )}
         </FormField>
 
-        {selectedBatch && (
+        {selectedBatch ? (
           <Alert
             type="info"
             showIcon
             className="mb-3"
             message={`${selectedBatch.quantity} currently available in this batch`}
           />
+        ) : (
+          productId &&
+          warehouseId && (
+            <Alert
+              type="info"
+              showIcon
+              className="mb-3"
+              message="No batch selected — stock will be removed from the oldest / soonest-to-expire batches first"
+            />
+          )
         )}
 
         <FormField control={control} name="notes" label="Notes">

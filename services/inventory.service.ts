@@ -338,6 +338,17 @@ export const inventoryService = {
     await assertProductAndWarehouseExist(input.productId, input.warehouseId);
 
     await prisma.$transaction(async (tx) => {
+      if (!input.inventoryId) {
+        await performStockOutFifo(tx, {
+          productId: input.productId,
+          warehouseId: input.warehouseId,
+          quantity: input.quantity,
+          notes: input.notes || null,
+          performedById: actor.userId,
+        });
+        return;
+      }
+
       const row = await tx.inventory.findFirst({
         where: { id: input.inventoryId, productId: input.productId, warehouseId: input.warehouseId },
       });

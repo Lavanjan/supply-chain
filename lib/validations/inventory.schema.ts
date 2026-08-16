@@ -14,7 +14,7 @@ export type StockInInput = z.infer<typeof stockInSchema>;
 export const stockOutSchema = z.object({
   productId: z.string().min(1, "Product is required"),
   warehouseId: z.string().min(1, "Warehouse is required"),
-  inventoryId: z.string().min(1, "Select the batch/row to remove stock from"),
+  inventoryId: z.string().optional().or(z.literal("")),
   quantity: z.number().positive("Quantity must be greater than 0"),
   notes: z.string().max(500, "Too long").optional().or(z.literal("")),
 });
