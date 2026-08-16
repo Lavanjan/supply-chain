@@ -70,6 +70,7 @@ async function toDetail(
       unitSymbol: item.product.unit.symbol,
       orderedQuantity: Number(item.orderedQuantity),
       receivedQuantity: Number(item.receivedQuantity),
+      wastedQuantity: Number(item.wastedQuantity),
       batchNumber: item.batchNumber,
       expiryDate: item.expiryDate ? item.expiryDate.toISOString() : null,
     })),
@@ -122,6 +123,32 @@ export const goodsReceiveNoteService = {
       }
     }
 
+    const previouslyAccountedByPurchaseItem = new Map<string, number>();
+    for (const grnItem of await prisma.goodsReceiveItem.findMany({
+      where: { purchaseItem: { purchaseOrderId: po.id } },
+      select: { purchaseItemId: true, receivedQuantity: true, wastedQuantity: true },
+    })) {
+      if (!grnItem.purchaseItemId) continue;
+      previouslyAccountedByPurchaseItem.set(
+        grnItem.purchaseItemId,
+        (previouslyAccountedByPurchaseItem.get(grnItem.purchaseItemId) ?? 0) +
+          Number(grnItem.receivedQuantity) +
+          Number(grnItem.wastedQuantity),
+      );
+    }
+
+    for (const item of input.items) {
+      const poItem = poItemById.get(item.purchaseItemId)!;
+      const previouslyAccounted = previouslyAccountedByPurchaseItem.get(item.purchaseItemId) ?? 0;
+      const newlyAccounted = item.receivedQuantity + item.wastedQuantity;
+      if (previouslyAccounted + newlyAccounted > Number(poItem.quantity)) {
+        throw new GoodsReceiveNoteServiceError(
+          "Received + wasted quantity cannot exceed the remaining ordered quantity for one or more items.",
+          422,
+        );
+      }
+    }
+
     const itemsToReceive = input.items.filter((item) => item.receivedQuantity > 0);
     const grnNumber = await goodsReceiveNoteRepository.generateGrnNumber();
 
@@ -143,6 +170,7 @@ export const goodsReceiveNoteService = {
                 productId: item.productId,
                 orderedQuantity: poItem.quantity,
                 receivedQuantity: item.receivedQuantity,
+                wastedQuantity: item.wastedQuantity,
                 batchNumber: item.batchNumber || null,
                 expiryDate: item.expiryDate ? new Date(item.expiryDate) : null,
               };
@@ -167,28 +195,33 @@ export const goodsReceiveNoteService = {
 
       const allGrnItems = await tx.goodsReceiveItem.findMany({
         where: { purchaseItem: { purchaseOrderId: po.id } },
-        select: { purchaseItemId: true, receivedQuantity: true },
+        select: { purchaseItemId: true, receivedQuantity: true, wastedQuantity: true },
       });
-      const receivedByPurchaseItem = new Map<string, number>();
+      const accountedByPurchaseItem = new Map<string, number>();
       for (const grnItem of allGrnItems) {
         if (!grnItem.purchaseItemId) continue;
-        receivedByPurchaseItem.set(
+        accountedByPurchaseItem.set(
           grnItem.purchaseItemId,
-          (receivedByPurchaseItem.get(grnItem.purchaseItemId) ?? 0) + Number(grnItem.receivedQuantity),
+          (accountedByPurchaseItem.get(grnItem.purchaseItemId) ?? 0) +
+            Number(grnItem.receivedQuantity) +
+            Number(grnItem.wastedQuantity),
         );
       }
 
-      const isFullyReceived = po.items.every(
-        (poItem) => (receivedByPurchaseItem.get(poItem.id) ?? 0) >= Number(poItem.quantity),
+      // An item counts as settled once received + wasted covers what was ordered —
+      // wastage still closes out the line even though no stock came of it.
+      const isFullyAccountedFor = po.items.every(
+        (poItem) => (accountedByPurchaseItem.get(poItem.id) ?? 0) >= Number(poItem.quantity),
       );
 
-      if (isFullyReceived) {
+      if (isFullyAccountedFor) {
         await tx.purchaseOrder.update({ where: { id: po.id }, data: { status: "COMPLETED" } });
       }
 
       return grn.id;
     });
 
+    const totalWasted = input.items.reduce((sum, item) => sum + item.wastedQuantity, 0);
     await auditLogRepository.create({
       userId: actor.userId,
       userName: actor.userName,
@@ -196,7 +229,9 @@ export const goodsReceiveNoteService = {
       module: "goods-receive-notes",
       entityType: "GoodsReceiveNote",
       entityId: grnId,
-      description: `Received goods against ${po.poNumber} (${grnNumber})`,
+      description:
+        `Received goods against ${po.poNumber} (${grnNumber})` +
+        (totalWasted > 0 ? ` — ${totalWasted} unit(s) recorded as wastage` : ""),
       ipAddress: actor.ipAddress,
     });
 

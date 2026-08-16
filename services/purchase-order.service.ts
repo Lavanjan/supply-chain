@@ -304,6 +304,10 @@ export const purchaseOrderService = {
             (sum, grnItem) => sum + Number(grnItem.receivedQuantity),
             0,
           );
+          const previouslyWastedQuantity = item.grnItems.reduce(
+            (sum, grnItem) => sum + Number(grnItem.wastedQuantity),
+            0,
+          );
           const orderedQuantity = Number(item.quantity);
           return {
             purchaseItemId: item.id,
@@ -313,7 +317,8 @@ export const purchaseOrderService = {
             unitSymbol: item.product.unit.symbol,
             orderedQuantity,
             previouslyReceivedQuantity,
-            remainingQuantity: Math.max(0, round2(orderedQuantity - previouslyReceivedQuantity)),
+            previouslyWastedQuantity,
+            remainingQuantity: Math.max(0, round2(orderedQuantity - previouslyReceivedQuantity - previouslyWastedQuantity)),
           };
         })
         // Items already fully received in a prior GRN have nothing left to

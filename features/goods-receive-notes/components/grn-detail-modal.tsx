@@ -107,6 +107,19 @@ export function GoodsReceiveNoteDetailModal({ open, id, onClose }: GoodsReceiveN
                     ),
                   },
                   {
+                    title: "Wasted",
+                    key: "wasted",
+                    align: "right",
+                    render: (_, item) =>
+                      item.wastedQuantity > 0 ? (
+                        <span className="font-medium text-red-500">
+                          {item.wastedQuantity} {item.unitSymbol}
+                        </span>
+                      ) : (
+                        <span className="text-neutral-400">—</span>
+                      ),
+                  },
+                  {
                     title: "Batch",
                     dataIndex: "batchNumber",
                     render: (value: string | null) => value || <span className="text-neutral-400">—</span>,

@@ -201,7 +201,7 @@ export const purchaseOrderRepository = {
         items: {
           include: {
             product: { select: { id: true, name: true, sku: true, unit: { select: { symbol: true } } } },
-            grnItems: { select: { receivedQuantity: true } },
+            grnItems: { select: { receivedQuantity: true, wastedQuantity: true } },
           },
         },
       },

@@ -65,6 +65,7 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
           purchaseItemId: item.purchaseItemId,
           productId: item.productId,
           receivedQuantity: item.remainingQuantity,
+          wastedQuantity: 0,
           batchNumber: "",
           expiryDate: "",
         })),
@@ -73,6 +74,18 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
   }, [detail, reset]);
 
   async function onSubmit(values: GoodsReceiveNoteInput) {
+    if (detail) {
+      for (let index = 0; index < values.items.length; index++) {
+        const line = detail.items[index];
+        const item = values.items[index];
+        if (!line) continue;
+        if (item.receivedQuantity + item.wastedQuantity > line.remainingQuantity) {
+          message.error(`${line.productName}: received + wastage cannot exceed the remaining ${line.remainingQuantity} ${line.unitSymbol}.`);
+          return;
+        }
+      }
+    }
+
     try {
       const created = await apiClient.post<{ id: string }>("/api/goods-receive-notes", values);
       message.success("Goods received");
@@ -93,7 +106,7 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
       confirmLoading={isSubmitting}
       okText="Receive Goods"
       okButtonProps={{ disabled: !purchaseOrderId }}
-      width={960}
+      width={1100}
       destroyOnHidden
     >
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
@@ -182,6 +195,12 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
                     render: (_, __, index) => detail.items[index]?.previouslyReceivedQuantity ?? 0,
                   },
                   {
+                    title: "Previously Wasted",
+                    key: "previouslyWasted",
+                    align: "right",
+                    render: (_, __, index) => detail.items[index]?.previouslyWastedQuantity ?? 0,
+                  },
+                  {
                     title: "Remaining",
                     key: "remaining",
                     align: "right",
@@ -193,6 +212,16 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
                     width: 130,
                     render: (_, __, index) => (
                       <FormField control={control} name={`items.${index}.receivedQuantity`} className="!mb-0">
+                        {(field) => <InputNumber {...field} min={0} className="w-full" />}
+                      </FormField>
+                    ),
+                  },
+                  {
+                    title: "Wastage",
+                    key: "wastage",
+                    width: 130,
+                    render: (_, __, index) => (
+                      <FormField control={control} name={`items.${index}.wastedQuantity`} className="!mb-0">
                         {(field) => <InputNumber {...field} min={0} className="w-full" />}
                       </FormField>
                     ),

@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   colProduct: { flex: 3 },
   colOrdered: { flex: 1, textAlign: "right" },
   colReceived: { flex: 1, textAlign: "right" },
+  colWasted: { flex: 1, textAlign: "right" },
   colBatch: { flex: 1.5, textAlign: "right" },
   headerText: { fontFamily: "Helvetica-Bold", fontSize: 9 },
   notes: { marginTop: 20, fontSize: 9, color: "#666666" },
@@ -67,6 +68,7 @@ export function GoodsReceiveNoteDocument({ grn, company }: { grn: GoodsReceiveNo
             <Text style={[styles.colProduct, styles.headerText]}>Product</Text>
             <Text style={[styles.colOrdered, styles.headerText]}>Ordered</Text>
             <Text style={[styles.colReceived, styles.headerText]}>Received</Text>
+            <Text style={[styles.colWasted, styles.headerText]}>Wasted</Text>
             <Text style={[styles.colBatch, styles.headerText]}>Batch / Expiry</Text>
           </View>
           {grn.items.map((item) => (
@@ -79,6 +81,9 @@ export function GoodsReceiveNoteDocument({ grn, company }: { grn: GoodsReceiveNo
               </Text>
               <Text style={styles.colReceived}>
                 {item.receivedQuantity} {item.unitSymbol}
+              </Text>
+              <Text style={styles.colWasted}>
+                {item.wastedQuantity > 0 ? `${item.wastedQuantity} ${item.unitSymbol}` : "—"}
               </Text>
               <Text style={styles.colBatch}>
                 {item.batchNumber || "—"}

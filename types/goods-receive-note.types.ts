@@ -21,6 +21,7 @@ export interface GoodsReceiveItemDetail {
   unitSymbol: string;
   orderedQuantity: number;
   receivedQuantity: number;
+  wastedQuantity: number;
   batchNumber: string | null;
   expiryDate: string | null;
 }
@@ -49,6 +50,7 @@ export interface ReceivableLineItem {
   unitSymbol: string;
   orderedQuantity: number;
   previouslyReceivedQuantity: number;
+  previouslyWastedQuantity: number;
   remainingQuantity: number;
 }
 
