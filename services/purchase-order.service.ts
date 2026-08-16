@@ -91,6 +91,10 @@ async function toDetail(
     expectedDate: row.expectedDate ? row.expectedDate.toISOString() : null,
     status: row.status,
     notes: row.notes,
+    chequeNumber: row.chequeNumber,
+    chequeBankName: row.chequeBankName,
+    chequeDate: row.chequeDate ? row.chequeDate.toISOString() : null,
+    chequeAmount: row.chequeAmount ? Number(row.chequeAmount) : null,
     createdByName: nameById.get(row.createdBy) ?? "Unknown",
     approvedByName: row.approvedBy ? (nameById.get(row.approvedBy) ?? "Unknown") : null,
     approvedAt: row.approvedAt ? row.approvedAt.toISOString() : null,
@@ -150,6 +154,10 @@ export const purchaseOrderService = {
       orderDate: new Date(input.orderDate),
       expectedDate: input.expectedDate ? new Date(input.expectedDate) : null,
       notes: input.notes || null,
+      chequeNumber: input.chequeNumber || null,
+      chequeBankName: input.chequeBankName || null,
+      chequeDate: input.chequeDate ? new Date(input.chequeDate) : null,
+      chequeAmount: input.chequeAmount ?? null,
       createdBy: actor.userId,
       items: input.items,
     });
@@ -187,6 +195,10 @@ export const purchaseOrderService = {
       orderDate: new Date(input.orderDate),
       expectedDate: input.expectedDate ? new Date(input.expectedDate) : null,
       notes: input.notes || null,
+      chequeNumber: input.chequeNumber || null,
+      chequeBankName: input.chequeBankName || null,
+      chequeDate: input.chequeDate ? new Date(input.chequeDate) : null,
+      chequeAmount: input.chequeAmount ?? null,
       items: input.items,
     });
 

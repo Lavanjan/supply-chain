@@ -330,6 +330,10 @@ model PurchaseOrder {
   expectedDate   DateTime?
   status         PurchaseOrderStatus @default(DRAFT)
   notes          String?
+  chequeNumber   String?
+  chequeBankName String?
+  chequeDate     DateTime?
+  chequeAmount   Decimal?            @db.Decimal(12, 2)
   createdBy      String
   approvedBy     String?
   approvedAt     DateTime?

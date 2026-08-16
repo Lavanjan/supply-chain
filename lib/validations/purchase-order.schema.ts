@@ -13,6 +13,10 @@ export const purchaseOrderSchema = z.object({
   orderDate: z.string().min(1, "Order date is required"),
   expectedDate: z.string().optional().or(z.literal("")),
   notes: z.string().max(1000, "Too long").optional().or(z.literal("")),
+  chequeNumber: z.string().max(100, "Too long").optional().or(z.literal("")),
+  chequeBankName: z.string().max(150, "Too long").optional().or(z.literal("")),
+  chequeDate: z.string().optional().or(z.literal("")),
+  chequeAmount: z.number().positive("Amount must be greater than 0").nullable().optional(),
   items: z.array(purchaseOrderItemSchema).min(1, "Add at least one item"),
 });
 

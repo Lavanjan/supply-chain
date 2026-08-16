@@ -31,6 +31,10 @@ function defaultValuesFrom(purchaseOrder?: PurchaseOrderDetail | null): Purchase
       orderDate: dayjs().toISOString(),
       expectedDate: "",
       notes: "",
+      chequeNumber: "",
+      chequeBankName: "",
+      chequeDate: "",
+      chequeAmount: null,
       items: [EMPTY_ITEM],
     };
   }
@@ -40,6 +44,10 @@ function defaultValuesFrom(purchaseOrder?: PurchaseOrderDetail | null): Purchase
     orderDate: purchaseOrder.orderDate,
     expectedDate: purchaseOrder.expectedDate ?? "",
     notes: purchaseOrder.notes ?? "",
+    chequeNumber: purchaseOrder.chequeNumber ?? "",
+    chequeBankName: purchaseOrder.chequeBankName ?? "",
+    chequeDate: purchaseOrder.chequeDate ?? "",
+    chequeAmount: purchaseOrder.chequeAmount,
     items: purchaseOrder.items.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
@@ -162,6 +170,43 @@ export function PurchaseOrderFormModal({
           <FormField control={control} name="notes" label="Notes">
             {(field) => <Input.TextArea {...field} rows={2} placeholder="Optional notes" />}
           </FormField>
+        </Card>
+
+        <Card title="Cheque Details" className="rounded-2xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+            <FormField control={control} name="chequeNumber" label="Cheque Number">
+              {(field) => <Input {...field} placeholder="Optional" />}
+            </FormField>
+
+            <FormField control={control} name="chequeBankName" label="Bank Name">
+              {(field) => <Input {...field} placeholder="Optional" />}
+            </FormField>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+            <FormField control={control} name="chequeDate" label="Cheque Date">
+              {(field) => (
+                <DatePicker
+                  className="w-full"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => setValue("chequeDate", date ? date.toISOString() : "")}
+                />
+              )}
+            </FormField>
+
+            <FormField control={control} name="chequeAmount" label="Amount">
+              {(field) => (
+                <InputNumber
+                  {...field}
+                  value={field.value ?? undefined}
+                  onChange={(value) => field.onChange(value ?? null)}
+                  min={0.01}
+                  className="w-full"
+                  placeholder="Optional"
+                />
+              )}
+            </FormField>
+          </div>
         </Card>
 
         <Card

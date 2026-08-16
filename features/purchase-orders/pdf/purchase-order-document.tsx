@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import dayjs from "dayjs";
+import { formatNumber } from "@/lib/utils/format";
 import type { PurchaseOrderDetail } from "@/types/purchase-order.types";
 import type { CompanyProfile } from "@/types/settings.types";
 
@@ -87,6 +88,22 @@ export function PurchaseOrderDocument({ po, company }: { po: PurchaseOrderDetail
             </View>
           ))}
         </View>
+
+        {(po.chequeNumber || po.chequeBankName || po.chequeDate || po.chequeAmount) && (
+          <View style={styles.section}>
+            <Text style={styles.label}>Cheque Details</Text>
+            <Text style={styles.value}>
+              {[
+                po.chequeNumber && `No. ${po.chequeNumber}`,
+                po.chequeBankName,
+                po.chequeDate && dayjs(po.chequeDate).format("MMM D, YYYY"),
+                po.chequeAmount != null && `Amount: ${formatNumber(po.chequeAmount)}`,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </Text>
+          </View>
+        )}
 
         {po.notes && (
           <View style={styles.notes}>

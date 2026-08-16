@@ -35,6 +35,10 @@ export interface PurchaseOrderDetail {
   expectedDate: string | null;
   status: PurchaseOrderStatus;
   notes: string | null;
+  chequeNumber: string | null;
+  chequeBankName: string | null;
+  chequeDate: string | null;
+  chequeAmount: number | null;
   createdByName: string;
   approvedByName: string | null;
   approvedAt: string | null;

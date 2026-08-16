@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/modal";
 import { CheckOutlined, CloseOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { apiClient, ApiError } from "@/lib/api/client";
+import { formatNumber } from "@/lib/utils/format";
 import { usePermission } from "@/hooks/use-permission";
 import { PurchaseOrderFormModal } from "@/features/purchase-orders/components/purchase-order-form-modal";
 import type { PurchaseOrderDetail as PurchaseOrderDetailType } from "@/types/purchase-order.types";
@@ -176,6 +177,21 @@ export function PurchaseOrderDetailModal({ open, id, onClose, onChanged }: Purch
               )}
             </Descriptions>
           </Card>
+
+          {(po.chequeNumber || po.chequeBankName || po.chequeDate || po.chequeAmount) && (
+            <Card title="Cheque Details" className="rounded-2xl">
+              <Descriptions column={{ xs: 1, sm: 2 }} size="small">
+                {po.chequeNumber && <Descriptions.Item label="Cheque Number">{po.chequeNumber}</Descriptions.Item>}
+                {po.chequeBankName && <Descriptions.Item label="Bank Name">{po.chequeBankName}</Descriptions.Item>}
+                {po.chequeDate && (
+                  <Descriptions.Item label="Cheque Date">{dayjs(po.chequeDate).format("MMM D, YYYY")}</Descriptions.Item>
+                )}
+                {po.chequeAmount != null && (
+                  <Descriptions.Item label="Amount">{formatNumber(po.chequeAmount)}</Descriptions.Item>
+                )}
+              </Descriptions>
+            </Card>
+          )}
 
           <Card title="Line Items" className="rounded-2xl">
             <div className="overflow-x-auto">

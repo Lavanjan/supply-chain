@@ -91,6 +91,10 @@ export const purchaseOrderRepository = {
     orderDate: Date;
     expectedDate: Date | null;
     notes: string | null;
+    chequeNumber: string | null;
+    chequeBankName: string | null;
+    chequeDate: Date | null;
+    chequeAmount: number | null;
     createdBy: string;
     items: { productId: string; quantity: number }[];
   }) {
@@ -102,6 +106,10 @@ export const purchaseOrderRepository = {
         orderDate: data.orderDate,
         expectedDate: data.expectedDate,
         notes: data.notes,
+        chequeNumber: data.chequeNumber,
+        chequeBankName: data.chequeBankName,
+        chequeDate: data.chequeDate,
+        chequeAmount: data.chequeAmount,
         createdBy: data.createdBy,
         items: { create: data.items },
       },
@@ -117,6 +125,10 @@ export const purchaseOrderRepository = {
       orderDate: Date;
       expectedDate: Date | null;
       notes: string | null;
+      chequeNumber: string | null;
+      chequeBankName: string | null;
+      chequeDate: Date | null;
+      chequeAmount: number | null;
       items: { productId: string; quantity: number }[];
     },
   ) {
@@ -130,6 +142,10 @@ export const purchaseOrderRepository = {
           orderDate: data.orderDate,
           expectedDate: data.expectedDate,
           notes: data.notes,
+          chequeNumber: data.chequeNumber,
+          chequeBankName: data.chequeBankName,
+          chequeDate: data.chequeDate,
+          chequeAmount: data.chequeAmount,
           items: { create: data.items },
         },
         include: detailInclude,
