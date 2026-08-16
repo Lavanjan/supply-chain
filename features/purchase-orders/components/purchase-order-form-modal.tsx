@@ -112,12 +112,12 @@ export function PurchaseOrderFormModal({
       onOk={handleSubmit(onSubmit)}
       confirmLoading={isSubmitting}
       okText={isEdit ? "Save Changes" : "Create Purchase Order"}
-      width={800}
+      width={960}
       destroyOnHidden
     >
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
         <Card title="Order Details" className="rounded-2xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4">
             <FormField control={control} name="supplierId" label="Supplier" required>
               {(field) => (
                 <Select
@@ -143,9 +143,7 @@ export function PurchaseOrderFormModal({
                 />
               )}
             </FormField>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
             <FormField control={control} name="orderDate" label="Order Date" required>
               {(field) => (
                 <DatePicker
@@ -173,7 +171,7 @@ export function PurchaseOrderFormModal({
         </Card>
 
         <Card title="Cheque Details" className="rounded-2xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4">
             <FormField control={control} name="chequeNumber" label="Cheque Number">
               {(field) => <Input {...field} placeholder="Optional" />}
             </FormField>
@@ -181,9 +179,7 @@ export function PurchaseOrderFormModal({
             <FormField control={control} name="chequeBankName" label="Bank Name">
               {(field) => <Input {...field} placeholder="Optional" />}
             </FormField>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
             <FormField control={control} name="chequeDate" label="Cheque Date">
               {(field) => (
                 <DatePicker
