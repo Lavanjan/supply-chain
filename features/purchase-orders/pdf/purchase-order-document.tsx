@@ -1,6 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import dayjs from "dayjs";
-import { formatCurrency } from "@/lib/utils/format";
 import type { PurchaseOrderDetail } from "@/types/purchase-order.types";
 import type { CompanyProfile } from "@/types/settings.types";
 
@@ -21,24 +20,7 @@ const styles = StyleSheet.create({
   tableHeaderRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: "#171717", paddingVertical: 6 },
   colProduct: { flex: 3 },
   colQty: { flex: 1, textAlign: "right" },
-  colPrice: { flex: 1, textAlign: "right" },
-  colDiscount: { flex: 1, textAlign: "right" },
-  colTax: { flex: 1, textAlign: "right" },
-  colTotal: { flex: 1, textAlign: "right" },
   headerText: { fontFamily: "Helvetica-Bold", fontSize: 9 },
-  totalsBlock: { marginTop: 16, alignItems: "flex-end" },
-  totalsRow: { flexDirection: "row", justifyContent: "space-between", width: 200, marginBottom: 3 },
-  totalsLabel: { color: "#666666" },
-  grandTotalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: 200,
-    marginTop: 4,
-    paddingTop: 4,
-    borderTopWidth: 1,
-    borderTopColor: "#171717",
-  },
-  grandTotalText: { fontFamily: "Helvetica-Bold", fontSize: 12 },
   notes: { marginTop: 20, fontSize: 9, color: "#666666" },
   footer: { position: "absolute", bottom: 24, left: 32, right: 32, fontSize: 8, color: "#999999", textAlign: "center" },
 });
@@ -93,10 +75,6 @@ export function PurchaseOrderDocument({ po, company }: { po: PurchaseOrderDetail
           <View style={styles.tableHeaderRow}>
             <Text style={[styles.colProduct, styles.headerText]}>Product</Text>
             <Text style={[styles.colQty, styles.headerText]}>Qty</Text>
-            <Text style={[styles.colPrice, styles.headerText]}>Unit Price</Text>
-            <Text style={[styles.colDiscount, styles.headerText]}>Discount</Text>
-            <Text style={[styles.colTax, styles.headerText]}>Tax</Text>
-            <Text style={[styles.colTotal, styles.headerText]}>Total</Text>
           </View>
           {po.items.map((item) => (
             <View key={item.id} style={styles.tableRow}>
@@ -106,31 +84,8 @@ export function PurchaseOrderDocument({ po, company }: { po: PurchaseOrderDetail
               <Text style={styles.colQty}>
                 {item.quantity} {item.unitSymbol}
               </Text>
-              <Text style={styles.colPrice}>{formatCurrency(item.unitPrice)}</Text>
-              <Text style={styles.colDiscount}>{formatCurrency(item.discount)}</Text>
-              <Text style={styles.colTax}>{formatCurrency(item.tax)}</Text>
-              <Text style={styles.colTotal}>{formatCurrency(item.totalPrice)}</Text>
             </View>
           ))}
-        </View>
-
-        <View style={styles.totalsBlock}>
-          <View style={styles.totalsRow}>
-            <Text style={styles.totalsLabel}>Subtotal</Text>
-            <Text>{formatCurrency(po.subtotal)}</Text>
-          </View>
-          <View style={styles.totalsRow}>
-            <Text style={styles.totalsLabel}>Discount</Text>
-            <Text>-{formatCurrency(po.discountAmount)}</Text>
-          </View>
-          <View style={styles.totalsRow}>
-            <Text style={styles.totalsLabel}>Tax</Text>
-            <Text>+{formatCurrency(po.taxAmount)}</Text>
-          </View>
-          <View style={styles.grandTotalRow}>
-            <Text style={styles.grandTotalText}>Total</Text>
-            <Text style={styles.grandTotalText}>{formatCurrency(po.totalAmount)}</Text>
-          </View>
         </View>
 
         {po.notes && (

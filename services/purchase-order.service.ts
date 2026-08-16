@@ -34,21 +34,6 @@ function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
-function calculateTotals(items: PurchaseOrderInput["items"]) {
-  const lineItems = items.map((item) => {
-    const lineGross = item.quantity * item.unitPrice;
-    const totalPrice = round2(lineGross - item.discount + item.tax);
-    return { ...item, totalPrice };
-  });
-
-  const subtotal = round2(lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0));
-  const discountAmount = round2(lineItems.reduce((sum, item) => sum + item.discount, 0));
-  const taxAmount = round2(lineItems.reduce((sum, item) => sum + item.tax, 0));
-  const totalAmount = round2(subtotal - discountAmount + taxAmount);
-
-  return { lineItems, subtotal, discountAmount, taxAmount, totalAmount };
-}
-
 async function assertReferencesExist(supplierId: string, warehouseId: string, productIds: string[]) {
   const [supplier, warehouse, products] = await Promise.all([
     prisma.supplier.findFirst({ where: { id: supplierId, isDeleted: false } }),
@@ -80,7 +65,6 @@ function toListItem(row: ListRow): PurchaseOrderListItem {
     orderDate: row.orderDate.toISOString(),
     expectedDate: row.expectedDate ? row.expectedDate.toISOString() : null,
     status: row.status,
-    totalAmount: Number(row.totalAmount),
     itemCount: row._count.items,
     createdAt: row.createdAt.toISOString(),
   };
@@ -106,10 +90,6 @@ async function toDetail(
     orderDate: row.orderDate.toISOString(),
     expectedDate: row.expectedDate ? row.expectedDate.toISOString() : null,
     status: row.status,
-    subtotal: Number(row.subtotal),
-    discountAmount: Number(row.discountAmount),
-    taxAmount: Number(row.taxAmount),
-    totalAmount: Number(row.totalAmount),
     notes: row.notes,
     createdByName: nameById.get(row.createdBy) ?? "Unknown",
     approvedByName: row.approvedBy ? (nameById.get(row.approvedBy) ?? "Unknown") : null,
@@ -123,10 +103,6 @@ async function toDetail(
       sku: item.product.sku,
       unitSymbol: item.product.unit.symbol,
       quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      discount: Number(item.discount),
-      tax: Number(item.tax),
-      totalPrice: Number(item.totalPrice),
     })),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
@@ -165,7 +141,6 @@ export const purchaseOrderService = {
       input.items.map((item) => item.productId),
     );
 
-    const { lineItems, subtotal, discountAmount, taxAmount, totalAmount } = calculateTotals(input.items);
     const poNumber = await purchaseOrderRepository.generatePoNumber();
 
     const created = await purchaseOrderRepository.createWithItems({
@@ -176,11 +151,7 @@ export const purchaseOrderService = {
       expectedDate: input.expectedDate ? new Date(input.expectedDate) : null,
       notes: input.notes || null,
       createdBy: actor.userId,
-      subtotal,
-      discountAmount,
-      taxAmount,
-      totalAmount,
-      items: lineItems,
+      items: input.items,
     });
 
     await auditLogRepository.create({
@@ -210,19 +181,13 @@ export const purchaseOrderService = {
       input.items.map((item) => item.productId),
     );
 
-    const { lineItems, subtotal, discountAmount, taxAmount, totalAmount } = calculateTotals(input.items);
-
     const updated = await purchaseOrderRepository.updateWithItems(id, {
       supplierId: input.supplierId,
       warehouseId: input.warehouseId,
       orderDate: new Date(input.orderDate),
       expectedDate: input.expectedDate ? new Date(input.expectedDate) : null,
       notes: input.notes || null,
-      subtotal,
-      discountAmount,
-      taxAmount,
-      totalAmount,
-      items: lineItems,
+      items: input.items,
     });
 
     await auditLogRepository.create({
@@ -337,7 +302,6 @@ export const purchaseOrderService = {
             orderedQuantity,
             previouslyReceivedQuantity,
             remainingQuantity: Math.max(0, round2(orderedQuantity - previouslyReceivedQuantity)),
-            unitPrice: Number(item.unitPrice),
           };
         })
         // Items already fully received in a prior GRN have nothing left to

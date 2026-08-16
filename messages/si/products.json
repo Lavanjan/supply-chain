@@ -11,8 +11,6 @@
     "product": "නිෂ්පාදනය",
     "category": "කාණ්ඩය",
     "unit": "ඒකකය",
-    "purchasePrice": "මිලදී ගැනීමේ මිල",
-    "sellingPrice": "විකුණුම් මිල",
     "stock": "තොගය",
     "status": "තත්ත්වය",
     "actions": "ක්‍රියා"
@@ -43,8 +41,6 @@
     "categoryPlaceholder": "කාණ්ඩය තෝරන්න",
     "unitLabel": "ඒකකය",
     "unitPlaceholder": "ඒකකය තෝරන්න",
-    "purchasePriceLabel": "මිලදී ගැනීමේ මිල",
-    "sellingPriceLabel": "විකුණුම් මිල",
     "minimumStockLabel": "අවම තොගය",
     "maximumStockLabel": "උපරිම තොගය",
     "currentStockLabel": "වත්මන් තොගය",

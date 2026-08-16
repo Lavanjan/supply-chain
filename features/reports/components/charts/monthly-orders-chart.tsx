@@ -2,16 +2,16 @@
 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useChartTheme } from "@/hooks/use-chart-theme";
-import { formatCompactCurrency } from "@/lib/utils/format";
+import { formatNumber } from "@/lib/utils/format";
 import { ChartTooltip } from "@/features/dashboard/components/charts/chart-tooltip";
 import { ChartEmpty } from "@/features/dashboard/components/charts/chart-empty";
-import type { MonthlyRevenuePoint } from "@/types/report.types";
+import type { MonthlyOrderCountPoint } from "@/types/report.types";
 
-export function MonthlyRevenueChart({ data }: { data: MonthlyRevenuePoint[] }) {
-  const { chrome, sequentialOrange } = useChartTheme();
-  const hasData = data.some((point) => point.total > 0);
+export function MonthlyOrdersChart({ data }: { data: MonthlyOrderCountPoint[] }) {
+  const { chrome, sequentialBlue } = useChartTheme();
+  const hasData = data.some((point) => point.count > 0);
 
-  if (!hasData) return <ChartEmpty message="No revenue in this range" />;
+  if (!hasData) return <ChartEmpty message="No purchase orders in this range" />;
 
   return (
     <ResponsiveContainer width="100%" height={260}>
@@ -27,8 +27,9 @@ export function MonthlyRevenueChart({ data }: { data: MonthlyRevenuePoint[] }) {
           tick={{ fill: chrome.muted, fontSize: 12 }}
           axisLine={false}
           tickLine={false}
-          tickFormatter={(value: number) => formatCompactCurrency(value)}
-          width={56}
+          tickFormatter={(value: number) => formatNumber(value)}
+          width={40}
+          allowDecimals={false}
         />
         <Tooltip
           cursor={{ stroke: chrome.baseline, strokeWidth: 1 }}
@@ -36,21 +37,21 @@ export function MonthlyRevenueChart({ data }: { data: MonthlyRevenuePoint[] }) {
             <ChartTooltip
               active={active}
               label={label}
-              formatValue={formatCompactCurrency}
+              formatValue={formatNumber}
               payload={payload?.map((entry) => ({
-                name: "Total revenue",
+                name: "Orders",
                 value: Number(entry.value),
-                color: sequentialOrange,
+                color: sequentialBlue,
               }))}
             />
           )}
         />
         <Area
           type="monotone"
-          dataKey="total"
-          stroke={sequentialOrange}
+          dataKey="count"
+          stroke={sequentialBlue}
           strokeWidth={2}
-          fill={sequentialOrange}
+          fill={sequentialBlue}
           fillOpacity={0.1}
           activeDot={{ r: 5, strokeWidth: 2, stroke: chrome.surface }}
         />

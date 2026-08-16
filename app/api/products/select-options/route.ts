@@ -12,8 +12,6 @@ export async function GET() {
       id: product.id,
       name: product.name,
       sku: product.sku,
-      purchasePrice: Number(product.purchasePrice),
-      sellingPrice: Number(product.sellingPrice),
       unitSymbol: product.unit.symbol,
     })),
   );

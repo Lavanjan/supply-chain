@@ -9,18 +9,17 @@ export interface SupplierOption {
   companyName: string;
 }
 
-export interface ProductPriceOption {
+export interface ProductOption {
   id: string;
   name: string;
   sku: string;
-  purchasePrice: number;
   unitSymbol: string;
 }
 
 export function usePurchaseOrderOptions() {
   const [suppliers, setSuppliers] = useState<SupplierOption[]>([]);
   const [warehouses, setWarehouses] = useState<WarehouseOption[]>([]);
-  const [products, setProducts] = useState<ProductPriceOption[]>([]);
+  const [products, setProducts] = useState<ProductOption[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export function usePurchaseOrderOptions() {
     Promise.all([
       apiClient.get<SupplierOption[]>("/api/suppliers/options"),
       apiClient.get<WarehouseOption[]>("/api/warehouses/options"),
-      apiClient.get<ProductPriceOption[]>("/api/products/select-options"),
+      apiClient.get<ProductOption[]>("/api/products/select-options"),
     ])
       .then(([supplierResult, warehouseResult, productResult]) => {
         if (cancelled) return;

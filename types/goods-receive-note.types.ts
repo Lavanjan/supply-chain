@@ -23,7 +23,6 @@ export interface GoodsReceiveItemDetail {
   receivedQuantity: number;
   batchNumber: string | null;
   expiryDate: string | null;
-  unitPrice: number;
 }
 
 export interface GoodsReceiveNoteDetail {
@@ -51,7 +50,6 @@ export interface ReceivableLineItem {
   orderedQuantity: number;
   previouslyReceivedQuantity: number;
   remainingQuantity: number;
-  unitPrice: number;
 }
 
 export interface ReceivablePurchaseOrder {

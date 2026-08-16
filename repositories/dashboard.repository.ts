@@ -26,7 +26,7 @@ export const dashboardRepository = {
   getProductStockSnapshot() {
     return prisma.product.findMany({
       where: { isDeleted: false },
-      select: { id: true, name: true, currentStock: true, purchasePrice: true, minimumStock: true },
+      select: { id: true, name: true, currentStock: true, minimumStock: true },
     });
   },
 
@@ -52,14 +52,6 @@ export const dashboardRepository = {
     });
   },
 
-  async getTotalRevenue() {
-    const result = await prisma.delivery.aggregate({
-      where: { isDeleted: false, status: { not: "CANCELLED" } },
-      _sum: { totalAmount: true },
-    });
-    return Number(result._sum.totalAmount ?? 0);
-  },
-
   getRecentPurchaseOrdersForMonthlyTotals() {
     const since = new Date();
     since.setMonth(since.getMonth() - (MONTHLY_PURCHASES_MONTHS - 1));
@@ -68,7 +60,7 @@ export const dashboardRepository = {
 
     return prisma.purchaseOrder.findMany({
       where: { isDeleted: false, orderDate: { gte: since } },
-      select: { orderDate: true, totalAmount: true },
+      select: { orderDate: true },
     });
   },
 
@@ -83,12 +75,12 @@ export const dashboardRepository = {
     });
   },
 
-  async getTopSuppliersByPurchaseValue() {
+  async getTopSuppliersByOrderCount() {
     const grouped = await prisma.purchaseOrder.groupBy({
       by: ["supplierId"],
       where: { isDeleted: false, status: { not: "CANCELLED" } },
-      _sum: { totalAmount: true },
-      orderBy: { _sum: { totalAmount: "desc" } },
+      _count: { _all: true },
+      orderBy: { _count: { supplierId: "desc" } },
       take: TOP_LIST_LIMIT,
     });
 
@@ -102,7 +94,7 @@ export const dashboardRepository = {
 
     return grouped.map((row) => ({
       name: nameById.get(row.supplierId) ?? "Unknown supplier",
-      value: Number(row._sum.totalAmount ?? 0),
+      count: row._count._all,
     }));
   },
 
@@ -129,10 +121,10 @@ export const dashboardRepository = {
       select: {
         id: true,
         poNumber: true,
-        totalAmount: true,
         status: true,
         orderDate: true,
         supplier: { select: { companyName: true } },
+        _count: { select: { items: true } },
       },
     });
   },

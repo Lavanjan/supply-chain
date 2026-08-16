@@ -2,18 +2,10 @@
 
 import type { ReactNode } from "react";
 import { Card, Typography } from "antd";
-import {
-  CarOutlined,
-  DollarOutlined,
-  FileTextOutlined,
-  RiseOutlined,
-  ShopOutlined,
-  ShoppingOutlined,
-  TeamOutlined,
-} from "@ant-design/icons";
+import { CarOutlined, FileTextOutlined, ShopOutlined, ShoppingOutlined, TeamOutlined } from "@ant-design/icons";
 import { useTranslations } from "next-intl";
 import { useChartTheme } from "@/hooks/use-chart-theme";
-import { formatCompactCurrency, formatNumber } from "@/lib/utils/format";
+import { formatNumber } from "@/lib/utils/format";
 import type { DashboardStats } from "@/types/dashboard.types";
 
 function tint(hex: string, alpha: number) {
@@ -157,7 +149,7 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <HeroStat
           icon={<ShoppingOutlined />}
           label={t("totalProducts")}
@@ -166,30 +158,23 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
           accent={categorical[0]}
         />
         <HeroStat
-          icon={<DollarOutlined />}
-          label={t("inventoryValue")}
-          value={formatCompactCurrency(stats.inventoryValue)}
-          subtitle={t("acrossWarehouses")}
-          accent={categorical[1]}
-        />
-        <HeroStat
-          icon={<RiseOutlined />}
-          label={t("totalRevenue")}
-          value={formatCompactCurrency(stats.totalRevenue)}
-          subtitle={t("fromDeliveries")}
-          accent={categorical[5]}
-        />
-        <HeroStat
           icon={<FileTextOutlined />}
           label={t("purchaseOrders")}
           value={formatNumber(stats.purchaseOrderCount)}
           subtitle={t("allTimeOrders")}
           accent={categorical[6]}
         />
+        <HeroStat
+          icon={<CarOutlined />}
+          label={t("todaysDeliveries")}
+          value={formatNumber(stats.todaysDeliveriesCount)}
+          subtitle={t("scheduledToday")}
+          accent={categorical[5]}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           <StockHealthCard
             totalProducts={stats.totalProducts}
             lowStockCount={stats.lowStockCount}
@@ -198,7 +183,6 @@ export function StatsOverview({ stats }: { stats: DashboardStats }) {
         </div>
         <CompactStat icon={<ShopOutlined />} label={t("suppliers")} value={formatNumber(stats.supplierCount)} />
         <CompactStat icon={<TeamOutlined />} label={t("customers")} value={formatNumber(stats.customerCount)} />
-        <CompactStat icon={<CarOutlined />} label={t("todaysDeliveries")} value={formatNumber(stats.todaysDeliveriesCount)} />
       </div>
     </div>
   );

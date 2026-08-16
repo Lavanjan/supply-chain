@@ -2,18 +2,18 @@
 
 import { useMemo, useState } from "react";
 import { Card, Col, DatePicker, Row, Select, Tag, Typography, type TableColumnsType } from "antd";
-import { CheckCircleOutlined, DollarOutlined, FileTextOutlined, RiseOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { StatCard } from "@/features/dashboard/components/stat-card";
-import { MonthlySpendChart } from "@/features/reports/components/charts/monthly-spend-chart";
+import { MonthlyOrdersChart } from "@/features/reports/components/charts/monthly-orders-chart";
 import { ReportTable } from "@/features/reports/components/report-table";
 import { ReportToolbar } from "@/features/reports/components/report-toolbar";
 import { useReportData } from "@/features/reports/hooks/use-report-data";
 import { useReportFilterOptions } from "@/features/reports/hooks/use-report-filter-options";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { downloadCsv, toCsv } from "@/lib/utils/csv";
-import { formatCurrency, formatNumber } from "@/lib/utils/format";
-import type { MonthlySpendPoint, PurchaseReportRow, PurchaseReportSummary } from "@/types/report.types";
+import { formatNumber } from "@/lib/utils/format";
+import type { MonthlyOrderCountPoint, PurchaseReportRow, PurchaseReportSummary } from "@/types/report.types";
 
 const { RangePicker } = DatePicker;
 
@@ -38,7 +38,7 @@ export function PurchaseReport() {
     [search, supplierId, status, dateFrom, dateTo],
   );
 
-  const { result, page, setPage, loading } = useReportData<PurchaseReportRow, PurchaseReportSummary, MonthlySpendPoint>({
+  const { result, page, setPage, loading } = useReportData<PurchaseReportRow, PurchaseReportSummary, MonthlyOrderCountPoint>({
     endpoint: "/api/reports/purchases",
     filters,
   });
@@ -51,7 +51,6 @@ export function PurchaseReport() {
       { key: "orderDate", label: "Order Date", value: (row) => dayjs(row.orderDate).format("YYYY-MM-DD") },
       { key: "status", label: "Status", value: (row) => row.status },
       { key: "itemCount", label: "Items", value: (row) => row.itemCount },
-      { key: "totalAmount", label: "Total Amount", value: (row) => row.totalAmount },
     ]);
     downloadCsv(`purchase-report-${Date.now()}.csv`, csv);
   }
@@ -61,7 +60,6 @@ export function PurchaseReport() {
     { title: "Supplier", dataIndex: "supplierName" },
     { title: "Order Date", dataIndex: "orderDate", render: (value: string) => dayjs(value).format("MMM D, YYYY") },
     { title: "Items", dataIndex: "itemCount", align: "right" },
-    { title: "Total", dataIndex: "totalAmount", align: "right", render: (value: number) => formatCurrency(value) },
     {
       title: "Status",
       dataIndex: "status",
@@ -72,20 +70,10 @@ export function PurchaseReport() {
   return (
     <div className="flex flex-col gap-4">
       <Row gutter={[12, 12]}>
-        <Col xs={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <StatCard icon={<FileTextOutlined />} label="Total Orders" value={formatNumber(result?.summary.totalOrders ?? 0)} />
         </Col>
-        <Col xs={12} lg={6}>
-          <StatCard icon={<DollarOutlined />} label="Total Spend" value={formatCurrency(result?.summary.totalSpend ?? 0)} />
-        </Col>
-        <Col xs={12} lg={6}>
-          <StatCard
-            icon={<RiseOutlined />}
-            label="Avg. Order Value"
-            value={formatCurrency(result?.summary.averageOrderValue ?? 0)}
-          />
-        </Col>
-        <Col xs={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <StatCard
             icon={<CheckCircleOutlined />}
             label="Completed"
@@ -94,8 +82,8 @@ export function PurchaseReport() {
         </Col>
       </Row>
 
-      <Card title="Purchase Spend Over Time" className="rounded-2xl">
-        <MonthlySpendChart data={result?.chart ?? []} />
+      <Card title="Purchase Orders Over Time" className="rounded-2xl">
+        <MonthlyOrdersChart data={result?.chart ?? []} />
       </Card>
 
       <Card className="rounded-2xl">
@@ -169,7 +157,7 @@ export function PurchaseReport() {
                 </div>
                 <div className="flex items-center justify-between mt-2 text-sm">
                   <span className="text-neutral-400">{dayjs(row.orderDate).format("MMM D, YYYY")}</span>
-                  <span className="font-medium">{formatCurrency(row.totalAmount)}</span>
+                  <span className="font-medium">{row.itemCount} items</span>
                 </div>
               </Card>
             )}

@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import { DataTable } from "@/components/ui/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { usePermission } from "@/hooks/use-permission";
-import { formatCurrency } from "@/lib/utils/format";
 import { PurchaseOrderFormModal } from "@/features/purchase-orders/components/purchase-order-form-modal";
 import { PurchaseOrderDetailModal } from "@/features/purchase-orders/components/purchase-order-detail-modal";
 import type { PurchaseOrderListItem } from "@/types/purchase-order.types";
@@ -52,13 +51,6 @@ export function PurchaseOrderTable() {
       render: (value: string) => dayjs(value).format("MMM D, YYYY"),
     },
     { title: "Items", dataIndex: "itemCount", align: "right" },
-    {
-      title: "Total",
-      dataIndex: "totalAmount",
-      align: "right",
-      sorter: true,
-      render: (value: number) => formatCurrency(value),
-    },
     {
       title: "Status",
       dataIndex: "status",
@@ -126,7 +118,7 @@ export function PurchaseOrderTable() {
             </div>
             <div className="flex items-center justify-between mt-2 text-sm">
               <span className="text-neutral-400">{dayjs(po.orderDate).format("MMM D, YYYY")}</span>
-              <span className="font-medium">{formatCurrency(po.totalAmount)}</span>
+              <span className="font-medium">{po.itemCount} items</span>
             </div>
           </Card>
         )}

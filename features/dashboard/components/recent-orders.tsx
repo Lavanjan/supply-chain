@@ -3,7 +3,6 @@
 import { Card, Empty, List, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
-import { formatCurrency } from "@/lib/utils/format";
 import type { RecentOrderItem } from "@/types/dashboard.types";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -43,7 +42,7 @@ export function RecentOrders({ orders }: { orders: RecentOrderItem[] }) {
                 }
               />
               <Typography.Text strong className="tabular-nums shrink-0">
-                {formatCurrency(order.totalAmount)}
+                {order.itemCount} items
               </Typography.Text>
             </List.Item>
           )}

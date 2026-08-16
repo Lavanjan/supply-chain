@@ -2,22 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { Card, Col, Row, Select, Switch, Tag, Typography, type TableColumnsType } from "antd";
-import {
-  AppstoreOutlined,
-  DollarOutlined,
-  ExclamationCircleOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+import { AppstoreOutlined, ExclamationCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import { StatCard } from "@/features/dashboard/components/stat-card";
-import { CategoryValueChart } from "@/features/reports/components/charts/category-value-chart";
+import { CategoryStockChart } from "@/features/reports/components/charts/category-stock-chart";
 import { ReportTable } from "@/features/reports/components/report-table";
 import { ReportToolbar } from "@/features/reports/components/report-toolbar";
 import { useReportData } from "@/features/reports/hooks/use-report-data";
 import { useReportFilterOptions } from "@/features/reports/hooks/use-report-filter-options";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { downloadCsv, toCsv } from "@/lib/utils/csv";
-import { formatCurrency, formatNumber } from "@/lib/utils/format";
-import type { CategoryValuePoint, InventoryReportRow, InventoryReportSummary } from "@/types/report.types";
+import { formatNumber } from "@/lib/utils/format";
+import type { CategoryStockPoint, InventoryReportRow, InventoryReportSummary } from "@/types/report.types";
 
 const STOCK_STATUS_COLOR: Record<string, string> = {
   NORMAL: "green",
@@ -49,7 +44,7 @@ export function InventoryReport() {
     [search, categoryId, warehouseId, lowStockOnly],
   );
 
-  const { result, page, setPage, loading } = useReportData<InventoryReportRow, InventoryReportSummary, CategoryValuePoint>({
+  const { result, page, setPage, loading } = useReportData<InventoryReportRow, InventoryReportSummary, CategoryStockPoint>({
     endpoint: "/api/reports/inventory",
     filters,
   });
@@ -62,8 +57,6 @@ export function InventoryReport() {
       { key: "categoryName", label: "Category", value: (row) => row.categoryName },
       { key: "quantity", label: "Quantity", value: (row) => row.quantity },
       { key: "unitSymbol", label: "Unit", value: (row) => row.unitSymbol },
-      { key: "unitCost", label: "Unit Cost", value: (row) => row.unitCost },
-      { key: "totalValue", label: "Total Value", value: (row) => row.totalValue },
       { key: "stockStatus", label: "Status", value: (row) => STOCK_STATUS_LABEL[row.stockStatus] },
     ]);
     downloadCsv(`inventory-report-${Date.now()}.csv`, csv);
@@ -87,8 +80,6 @@ export function InventoryReport() {
       align: "right",
       render: (_, row) => `${formatNumber(row.quantity)} ${row.unitSymbol}`,
     },
-    { title: "Unit Cost", dataIndex: "unitCost", align: "right", render: (value: number) => formatCurrency(value) },
-    { title: "Total Value", dataIndex: "totalValue", align: "right", render: (value: number) => formatCurrency(value) },
     {
       title: "Status",
       dataIndex: "stockStatus",
@@ -99,17 +90,10 @@ export function InventoryReport() {
   return (
     <div className="flex flex-col gap-4">
       <Row gutter={[12, 12]}>
-        <Col xs={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <StatCard icon={<AppstoreOutlined />} label="Total SKUs" value={formatNumber(result?.summary.totalSkus ?? 0)} />
         </Col>
-        <Col xs={12} lg={6}>
-          <StatCard
-            icon={<DollarOutlined />}
-            label="Total Stock Value"
-            value={formatCurrency(result?.summary.totalStockValue ?? 0)}
-          />
-        </Col>
-        <Col xs={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <StatCard
             icon={<WarningOutlined />}
             label="Low Stock"
@@ -117,7 +101,7 @@ export function InventoryReport() {
             tone="warning"
           />
         </Col>
-        <Col xs={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <StatCard
             icon={<ExclamationCircleOutlined />}
             label="Out of Stock"
@@ -127,8 +111,8 @@ export function InventoryReport() {
         </Col>
       </Row>
 
-      <Card title="Stock Value by Category" className="rounded-2xl">
-        <CategoryValueChart data={result?.chart ?? []} />
+      <Card title="Stock by Category" className="rounded-2xl">
+        <CategoryStockChart data={result?.chart ?? []} />
       </Card>
 
       <Card className="rounded-2xl">
@@ -194,7 +178,6 @@ export function InventoryReport() {
                   <span className="text-neutral-400">
                     {formatNumber(row.quantity)} {row.unitSymbol}
                   </span>
-                  <span className="font-medium">{formatCurrency(row.totalValue)}</span>
                 </div>
               </Card>
             )}

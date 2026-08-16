@@ -1,6 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import dayjs from "dayjs";
-import { formatCurrency } from "@/lib/utils/format";
 import type { DeliveryDetail } from "@/types/delivery.types";
 import type { CompanyProfile } from "@/types/settings.types";
 
@@ -20,12 +19,7 @@ const styles = StyleSheet.create({
   tableHeaderRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: "#171717", paddingVertical: 6 },
   colProduct: { flex: 3 },
   colQty: { flex: 1, textAlign: "right" },
-  colPrice: { flex: 1, textAlign: "right" },
-  colTotal: { flex: 1, textAlign: "right" },
   headerText: { fontFamily: "Helvetica-Bold", fontSize: 9 },
-  totalsRow: { flexDirection: "row", justifyContent: "flex-end", marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: "#171717" },
-  totalsLabel: { fontSize: 10, fontFamily: "Helvetica-Bold", marginRight: 16 },
-  totalsValue: { fontSize: 10, fontFamily: "Helvetica-Bold" },
   notes: { marginTop: 20, fontSize: 9, color: "#666666" },
   footer: { position: "absolute", bottom: 24, left: 32, right: 32, fontSize: 8, color: "#999999", textAlign: "center" },
 });
@@ -72,8 +66,6 @@ export function DeliveryNoteDocument({ delivery, company }: { delivery: Delivery
           <View style={styles.tableHeaderRow}>
             <Text style={[styles.colProduct, styles.headerText]}>Product</Text>
             <Text style={[styles.colQty, styles.headerText]}>Quantity</Text>
-            <Text style={[styles.colPrice, styles.headerText]}>Unit Price</Text>
-            <Text style={[styles.colTotal, styles.headerText]}>Total</Text>
           </View>
           {delivery.items.map((item) => (
             <View key={item.id} style={styles.tableRow}>
@@ -83,15 +75,8 @@ export function DeliveryNoteDocument({ delivery, company }: { delivery: Delivery
               <Text style={styles.colQty}>
                 {item.quantity} {item.unitSymbol}
               </Text>
-              <Text style={styles.colPrice}>{formatCurrency(item.unitPrice)}</Text>
-              <Text style={styles.colTotal}>{formatCurrency(item.totalPrice)}</Text>
             </View>
           ))}
-        </View>
-
-        <View style={styles.totalsRow}>
-          <Text style={styles.totalsLabel}>Delivery Total</Text>
-          <Text style={styles.totalsValue}>{formatCurrency(delivery.totalAmount)}</Text>
         </View>
 
         {delivery.notes && (

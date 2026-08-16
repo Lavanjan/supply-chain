@@ -11,7 +11,6 @@ export interface DeliveryListItem {
   deliveredDate: string | null;
   status: DeliveryStatus;
   itemCount: number;
-  totalAmount: number;
 }
 
 export interface DeliveryItemDetail {
@@ -21,8 +20,6 @@ export interface DeliveryItemDetail {
   sku: string;
   unitSymbol: string;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
 }
 
 export interface DeliveryDetail {
@@ -42,7 +39,6 @@ export interface DeliveryDetail {
   status: DeliveryStatus;
   deliveryAddress: string | null;
   notes: string | null;
-  totalAmount: number;
   createdByName: string;
   items: DeliveryItemDetail[];
   createdAt: string;

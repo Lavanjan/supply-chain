@@ -7,10 +7,6 @@
   "performedAnAction": "{name} performed an action",
   "stats": {
     "totalProducts": "Total Products",
-    "currentInventory": "Current Inventory",
-    "inventoryValue": "Inventory Value",
-    "totalRevenue": "Total Revenue",
-    "fromDeliveries": "From deliveries",
     "lowStock": "Low Stock",
     "outOfStock": "Out Of Stock",
     "suppliers": "Suppliers",
@@ -18,7 +14,6 @@
     "purchaseOrders": "Purchase Orders",
     "todaysDeliveries": "Today's Deliveries",
     "unitsInStock": "{count} units in stock",
-    "acrossWarehouses": "Across all warehouses",
     "allTimeOrders": "All-time orders placed",
     "scheduledToday": "Scheduled for today",
     "stockHealth": "Stock Health",
@@ -30,7 +25,7 @@
     "loadErrorDescription": "Please refresh the page to try again.",
     "monthlyPurchases": "Monthly Purchases",
     "inventoryMovement": "Inventory Movement (14 days)",
-    "topProductsByValue": "Top Products by Value",
-    "topSuppliersByPurchases": "Top Suppliers by Purchases"
+    "topProductsByStock": "Top Products by Stock",
+    "topSuppliersByOrders": "Top Suppliers by Order Count"
   }
 }

@@ -88,8 +88,7 @@ export const deliveryRepository = {
     deliveryAddress: string | null;
     notes: string | null;
     createdBy: string;
-    totalAmount: number;
-    items: { productId: string; quantity: number; unitPrice: number; totalPrice: number }[];
+    items: { productId: string; quantity: number }[];
   }) {
     return prisma.delivery.create({
       data: {
@@ -102,7 +101,6 @@ export const deliveryRepository = {
         deliveryAddress: data.deliveryAddress,
         notes: data.notes,
         createdBy: data.createdBy,
-        totalAmount: data.totalAmount,
         items: { create: data.items },
       },
       include: detailInclude,
@@ -119,8 +117,7 @@ export const deliveryRepository = {
       scheduledDate: Date;
       deliveryAddress: string | null;
       notes: string | null;
-      totalAmount: number;
-      items: { productId: string; quantity: number; unitPrice: number; totalPrice: number }[];
+      items: { productId: string; quantity: number }[];
     },
   ) {
     return prisma.$transaction(async (tx) => {
@@ -135,7 +132,6 @@ export const deliveryRepository = {
           scheduledDate: data.scheduledDate,
           deliveryAddress: data.deliveryAddress,
           notes: data.notes,
-          totalAmount: data.totalAmount,
           items: { create: data.items },
         },
         include: detailInclude,

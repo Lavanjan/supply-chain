@@ -7,10 +7,6 @@
   "performedAnAction": "{name} ක්‍රියාවක් සිදු කළේය",
   "stats": {
     "totalProducts": "මුළු නිෂ්පාදන ගණන",
-    "currentInventory": "වත්මන් තොග",
-    "inventoryValue": "තොග වටිනාකම",
-    "totalRevenue": "මුළු ආදායම",
-    "fromDeliveries": "බෙදාහැරීම් වලින්",
     "lowStock": "අඩු තොග",
     "outOfStock": "තොග අවසන්",
     "suppliers": "සැපයුම්කරුවන්",
@@ -18,7 +14,6 @@
     "purchaseOrders": "මිලදී ගැනීමේ ඇණවුම්",
     "todaysDeliveries": "අද දින බෙදාහැරීම්",
     "unitsInStock": "තොගයේ ඒකක {count}ක්",
-    "acrossWarehouses": "සියලුම ගබඩා පුරා",
     "allTimeOrders": "සියලු කාලවල ලබා දුන් ඇණවුම්",
     "scheduledToday": "අද දිනට සැලසුම් කර ඇත",
     "stockHealth": "තොග තත්ත්වය",
@@ -30,7 +25,7 @@
     "loadErrorDescription": "නැවත උත්සාහ කිරීමට පිටුව නැවුම් කරන්න.",
     "monthlyPurchases": "මාසික මිලදී ගැනීම්",
     "inventoryMovement": "තොග චලනය (දින 14)",
-    "topProductsByValue": "වටිනාකම අනුව ඉහළම නිෂ්පාදන",
-    "topSuppliersByPurchases": "මිලදී ගැනීම් අනුව ඉහළම සැපයුම්කරුවන්"
+    "topProductsByStock": "තොගය අනුව ඉහළම නිෂ්පාදන",
+    "topSuppliersByOrders": "ඇණවුම් ගණන අනුව ඉහළම සැපයුම්කරුවන්"
   }
 }

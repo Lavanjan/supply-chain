@@ -72,7 +72,6 @@ async function toDetail(
       receivedQuantity: Number(item.receivedQuantity),
       batchNumber: item.batchNumber,
       expiryDate: item.expiryDate ? item.expiryDate.toISOString() : null,
-      unitPrice: Number(item.unitPrice),
     })),
     createdAt: row.createdAt.toISOString(),
   };
@@ -146,7 +145,6 @@ export const goodsReceiveNoteService = {
                 receivedQuantity: item.receivedQuantity,
                 batchNumber: item.batchNumber || null,
                 expiryDate: item.expiryDate ? new Date(item.expiryDate) : null,
-                unitPrice: poItem.unitPrice,
               };
             }),
           },

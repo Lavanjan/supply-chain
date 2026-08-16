@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useChartTheme } from "@/hooks/use-chart-theme";
-import { formatCompactCurrency } from "@/lib/utils/format";
+import { formatCompactNumber } from "@/lib/utils/format";
 import { ChartTooltip } from "@/features/dashboard/components/charts/chart-tooltip";
 import { ChartEmpty } from "@/features/dashboard/components/charts/chart-empty";
 import type { TopProductPoint } from "@/types/dashboard.types";
@@ -10,7 +10,7 @@ import type { TopProductPoint } from "@/types/dashboard.types";
 export function TopProductsChart({ data }: { data: TopProductPoint[] }) {
   const { chrome, sequentialBlue } = useChartTheme();
 
-  if (data.length === 0) return <ChartEmpty message="No inventory value to rank yet" />;
+  if (data.length === 0) return <ChartEmpty message="No stock to rank yet" />;
 
   return (
     <ResponsiveContainer width="100%" height={260}>
@@ -35,20 +35,20 @@ export function TopProductsChart({ data }: { data: TopProductPoint[] }) {
             <ChartTooltip
               active={active}
               label={label}
-              formatValue={formatCompactCurrency}
+              formatValue={formatCompactNumber}
               payload={payload?.map((entry) => ({
-                name: "Inventory value",
+                name: "Stock quantity",
                 value: Number(entry.value),
                 color: sequentialBlue,
               }))}
             />
           )}
         />
-        <Bar dataKey="value" fill={sequentialBlue} radius={[0, 4, 4, 0]} maxBarSize={20}>
+        <Bar dataKey="quantity" fill={sequentialBlue} radius={[0, 4, 4, 0]} maxBarSize={20}>
           <LabelList
-            dataKey="value"
+            dataKey="quantity"
             position="right"
-            formatter={(value: unknown) => formatCompactCurrency(Number(value))}
+            formatter={(value: unknown) => formatCompactNumber(Number(value))}
             style={{ fill: chrome.textSecondary, fontSize: 12 }}
           />
         </Bar>

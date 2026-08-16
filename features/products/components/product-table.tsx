@@ -8,7 +8,6 @@ import { DataTable } from "@/components/ui/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { usePermission } from "@/hooks/use-permission";
 import { apiClient, ApiError } from "@/lib/api/client";
-import { formatCurrency } from "@/lib/utils/format";
 import { useProductOptions } from "@/features/products/hooks/use-product-options";
 import { ProductFormModal } from "@/features/products/components/product-form-modal";
 import { ProductCodesModal } from "@/features/products/components/product-codes-modal";
@@ -94,20 +93,6 @@ export function ProductTable() {
     {
       title: t("columns.unit"),
       dataIndex: "unitSymbol",
-    },
-    {
-      title: t("columns.purchasePrice"),
-      dataIndex: "purchasePrice",
-      align: "right",
-      sorter: true,
-      render: (value: number) => formatCurrency(value),
-    },
-    {
-      title: t("columns.sellingPrice"),
-      dataIndex: "sellingPrice",
-      align: "right",
-      sorter: true,
-      render: (value: number) => formatCurrency(value),
     },
     {
       title: t("columns.stock"),
@@ -222,7 +207,7 @@ export function ProductTable() {
                     <Tag color={STATUS_COLORS[product.status]}>{tStatus(product.status)}</Tag>
                   </div>
                   <div className="flex items-center justify-between mt-2 text-sm">
-                    <span>{formatCurrency(product.sellingPrice)}</span>
+                    <span className="text-neutral-400">{product.categoryName}</span>
                     <span className="flex items-center gap-1">
                       {product.currentStock} {product.unitSymbol}
                       {tone && <Tag color={tone.color}>{tone.label}</Tag>}

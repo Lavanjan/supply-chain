@@ -11,8 +11,6 @@
     "product": "Product",
     "category": "Category",
     "unit": "Unit",
-    "purchasePrice": "Purchase Price",
-    "sellingPrice": "Selling Price",
     "stock": "Stock",
     "status": "Status",
     "actions": "Actions"
@@ -43,8 +41,6 @@
     "categoryPlaceholder": "Select category",
     "unitLabel": "Unit",
     "unitPlaceholder": "Select unit",
-    "purchasePriceLabel": "Purchase Price",
-    "sellingPriceLabel": "Selling Price",
     "minimumStockLabel": "Minimum Stock",
     "maximumStockLabel": "Maximum Stock",
     "currentStockLabel": "Current Stock",

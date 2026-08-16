@@ -6,7 +6,6 @@ import { Modal } from "@/components/ui/modal";
 import { CheckOutlined, CloseOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { apiClient, ApiError } from "@/lib/api/client";
-import { formatCurrency } from "@/lib/utils/format";
 import { usePermission } from "@/hooks/use-permission";
 import { PurchaseOrderFormModal } from "@/features/purchase-orders/components/purchase-order-form-modal";
 import type { PurchaseOrderDetail as PurchaseOrderDetailType } from "@/types/purchase-order.types";
@@ -202,38 +201,8 @@ export function PurchaseOrderDetailModal({ open, id, onClose, onChanged }: Purch
                     align: "right",
                     render: (_, item) => `${item.quantity} ${item.unitSymbol}`,
                   },
-                  { title: "Unit Price", key: "unitPrice", align: "right", render: (_, item) => formatCurrency(item.unitPrice) },
-                  { title: "Discount", key: "discount", align: "right", render: (_, item) => formatCurrency(item.discount) },
-                  { title: "Tax", key: "tax", align: "right", render: (_, item) => formatCurrency(item.tax) },
-                  {
-                    title: "Total",
-                    key: "total",
-                    align: "right",
-                    render: (_, item) => <span className="font-medium">{formatCurrency(item.totalPrice)}</span>,
-                  },
                 ]}
               />
-            </div>
-
-            <div className="flex justify-end mt-4">
-              <div className="w-full sm:w-72 flex flex-col gap-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Subtotal</span>
-                  <span>{formatCurrency(po.subtotal)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Discount</span>
-                  <span>-{formatCurrency(po.discountAmount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Tax</span>
-                  <span>+{formatCurrency(po.taxAmount)}</span>
-                </div>
-                <div className="flex justify-between text-base font-semibold border-t border-black/10 dark:border-white/10 pt-1 mt-1">
-                  <span>Total</span>
-                  <span>{formatCurrency(po.totalAmount)}</span>
-                </div>
-              </div>
             </div>
           </Card>
 

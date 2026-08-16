@@ -2,14 +2,14 @@
 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useChartTheme } from "@/hooks/use-chart-theme";
-import { formatCompactCurrency } from "@/lib/utils/format";
+import { formatNumber } from "@/lib/utils/format";
 import { ChartTooltip } from "@/features/dashboard/components/charts/chart-tooltip";
 import { ChartEmpty } from "@/features/dashboard/components/charts/chart-empty";
 import type { MonthlyPurchasePoint } from "@/types/dashboard.types";
 
 export function MonthlyPurchasesChart({ data }: { data: MonthlyPurchasePoint[] }) {
   const { chrome, sequentialBlue } = useChartTheme();
-  const hasData = data.some((point) => point.total > 0);
+  const hasData = data.some((point) => point.count > 0);
 
   if (!hasData) return <ChartEmpty message="No purchase orders in the last 6 months" />;
 
@@ -27,8 +27,9 @@ export function MonthlyPurchasesChart({ data }: { data: MonthlyPurchasePoint[] }
           tick={{ fill: chrome.muted, fontSize: 12 }}
           axisLine={false}
           tickLine={false}
-          tickFormatter={(value: number) => formatCompactCurrency(value)}
-          width={56}
+          tickFormatter={(value: number) => formatNumber(value)}
+          width={40}
+          allowDecimals={false}
         />
         <Tooltip
           cursor={{ stroke: chrome.baseline, strokeWidth: 1 }}
@@ -36,9 +37,9 @@ export function MonthlyPurchasesChart({ data }: { data: MonthlyPurchasePoint[] }
             <ChartTooltip
               active={active}
               label={label}
-              formatValue={formatCompactCurrency}
+              formatValue={formatNumber}
               payload={payload?.map((entry) => ({
-                name: "Total purchases",
+                name: "Purchase orders",
                 value: Number(entry.value),
                 color: sequentialBlue,
               }))}
@@ -47,7 +48,7 @@ export function MonthlyPurchasesChart({ data }: { data: MonthlyPurchasePoint[] }
         />
         <Area
           type="monotone"
-          dataKey="total"
+          dataKey="count"
           stroke={sequentialBlue}
           strokeWidth={2}
           fill={sequentialBlue}

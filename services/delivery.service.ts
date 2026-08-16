@@ -16,16 +16,6 @@ export class DeliveryServiceError extends Error {
   }
 }
 
-function round2(value: number): number {
-  return Math.round(value * 100) / 100;
-}
-
-function calculateTotal(items: DeliveryInput["items"]) {
-  const lineItems = items.map((item) => ({ ...item, totalPrice: round2(item.quantity * item.unitPrice) }));
-  const totalAmount = round2(lineItems.reduce((sum, item) => sum + item.totalPrice, 0));
-  return { lineItems, totalAmount };
-}
-
 interface ActorContext {
   userId: string;
   userName: string;
@@ -54,7 +44,6 @@ function toListItem(row: ListRow): DeliveryListItem {
     deliveredDate: row.deliveredDate ? row.deliveredDate.toISOString() : null,
     status: row.status,
     itemCount: row._count.items,
-    totalAmount: Number(row.totalAmount),
   };
 }
 
@@ -80,7 +69,6 @@ async function toDetail(
     status: row.status,
     deliveryAddress: row.deliveryAddress,
     notes: row.notes,
-    totalAmount: Number(row.totalAmount),
     createdByName: creator?.name ?? "Unknown",
     items: row.items.map((item) => ({
       id: item.id,
@@ -89,8 +77,6 @@ async function toDetail(
       sku: item.product.sku,
       unitSymbol: item.product.unit.symbol,
       quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      totalPrice: Number(item.totalPrice),
     })),
     createdAt: row.createdAt.toISOString(),
   };
@@ -164,8 +150,6 @@ export const deliveryService = {
     await assertReferencesExist(input);
     await assertSufficientStock(input);
 
-    const { lineItems, totalAmount } = calculateTotal(input.items);
-
     const deliveryNumber = await deliveryRepository.generateDeliveryNumber();
     const created = await deliveryRepository.createWithItems({
       deliveryNumber,
@@ -177,8 +161,7 @@ export const deliveryService = {
       deliveryAddress: input.deliveryAddress || null,
       notes: input.notes || null,
       createdBy: actor.userId,
-      totalAmount,
-      items: lineItems,
+      items: input.items,
     });
 
     await auditLogRepository.create({
@@ -205,8 +188,6 @@ export const deliveryService = {
     await assertReferencesExist(input);
     await assertSufficientStock(input);
 
-    const { lineItems, totalAmount } = calculateTotal(input.items);
-
     const updated = await deliveryRepository.updateWithItems(id, {
       customerId: input.customerId,
       warehouseId: input.warehouseId,
@@ -215,8 +196,7 @@ export const deliveryService = {
       scheduledDate: new Date(input.scheduledDate),
       deliveryAddress: input.deliveryAddress || null,
       notes: input.notes || null,
-      totalAmount,
-      items: lineItems,
+      items: input.items,
     });
 
     await auditLogRepository.create({

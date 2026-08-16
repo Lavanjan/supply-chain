@@ -16,22 +16,19 @@ export interface InventoryReportRow {
   categoryName: string;
   unitSymbol: string;
   quantity: number;
-  unitCost: number;
-  totalValue: number;
   minimumStock: number;
   stockStatus: StockStatus;
 }
 
 export interface InventoryReportSummary {
   totalSkus: number;
-  totalStockValue: number;
   lowStockCount: number;
   outOfStockCount: number;
 }
 
-export interface CategoryValuePoint {
+export interface CategoryStockPoint {
   name: string;
-  value: number;
+  quantity: number;
 }
 
 export interface PurchaseReportRow {
@@ -41,19 +38,16 @@ export interface PurchaseReportRow {
   orderDate: string;
   status: string;
   itemCount: number;
-  totalAmount: number;
 }
 
 export interface PurchaseReportSummary {
   totalOrders: number;
-  totalSpend: number;
-  averageOrderValue: number;
   completedCount: number;
 }
 
-export interface MonthlySpendPoint {
+export interface MonthlyOrderCountPoint {
   month: string;
-  total: number;
+  count: number;
 }
 
 export interface DeliveryReportRow {
@@ -77,49 +71,6 @@ export interface DeliveryReportSummary {
 export interface DeliveryStatusPoint {
   status: string;
   count: number;
-}
-
-export interface SalesReportRow {
-  id: string;
-  deliveryNumber: string;
-  customerName: string;
-  scheduledDate: string;
-  status: string;
-  itemCount: number;
-  totalAmount: number;
-}
-
-export interface SalesReportSummary {
-  totalDeliveries: number;
-  totalRevenue: number;
-  averageDeliveryValue: number;
-  deliveredCount: number;
-}
-
-export interface MonthlyRevenuePoint {
-  month: string;
-  total: number;
-}
-
-export interface ProfitReportRow {
-  month: string;
-  revenue: number;
-  costOfGoods: number;
-  profit: number;
-  marginPercent: number;
-}
-
-export interface ProfitReportSummary {
-  totalRevenue: number;
-  totalCostOfGoods: number;
-  grossProfit: number;
-  marginPercent: number;
-}
-
-export interface ProfitChartPoint {
-  month: string;
-  revenue: number;
-  cost: number;
 }
 
 export interface StockMovementReportRow {

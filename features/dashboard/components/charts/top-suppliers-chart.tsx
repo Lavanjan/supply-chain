@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useChartTheme } from "@/hooks/use-chart-theme";
-import { formatCompactCurrency } from "@/lib/utils/format";
+import { formatNumber } from "@/lib/utils/format";
 import { ChartTooltip } from "@/features/dashboard/components/charts/chart-tooltip";
 import { ChartEmpty } from "@/features/dashboard/components/charts/chart-empty";
 import type { TopSupplierPoint } from "@/types/dashboard.types";
@@ -20,7 +20,7 @@ export function TopSuppliersChart({ data }: { data: TopSupplierPoint[] }) {
         margin={{ top: 8, right: 32, left: 8, bottom: 0 }}
       >
         <CartesianGrid stroke={chrome.gridline} horizontal={false} />
-        <XAxis type="number" hide />
+        <XAxis type="number" hide allowDecimals={false} />
         <YAxis
           type="category"
           dataKey="name"
@@ -35,20 +35,20 @@ export function TopSuppliersChart({ data }: { data: TopSupplierPoint[] }) {
             <ChartTooltip
               active={active}
               label={label}
-              formatValue={formatCompactCurrency}
+              formatValue={formatNumber}
               payload={payload?.map((entry) => ({
-                name: "Total purchases",
+                name: "Orders",
                 value: Number(entry.value),
                 color: sequentialOrange,
               }))}
             />
           )}
         />
-        <Bar dataKey="value" fill={sequentialOrange} radius={[0, 4, 4, 0]} maxBarSize={20}>
+        <Bar dataKey="count" fill={sequentialOrange} radius={[0, 4, 4, 0]} maxBarSize={20}>
           <LabelList
-            dataKey="value"
+            dataKey="count"
             position="right"
-            formatter={(value: unknown) => formatCompactCurrency(Number(value))}
+            formatter={(value: unknown) => formatNumber(Number(value))}
             style={{ fill: chrome.textSecondary, fontSize: 12 }}
           />
         </Bar>

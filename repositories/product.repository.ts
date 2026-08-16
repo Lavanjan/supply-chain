@@ -30,16 +30,7 @@ function buildWhere(params: Pick<FindManyParams, "search" | "categoryId" | "unit
   };
 }
 
-const SORTABLE_FIELDS = new Set([
-  "name",
-  "sku",
-  "purchasePrice",
-  "sellingPrice",
-  "currentStock",
-  "status",
-  "createdAt",
-  "updatedAt",
-]);
+const SORTABLE_FIELDS = new Set(["name", "sku", "currentStock", "status", "createdAt", "updatedAt"]);
 
 function buildOrderBy(sortField?: string, sortOrder?: "ascend" | "descend"): Prisma.ProductOrderByWithRelationInput {
   if (sortField && SORTABLE_FIELDS.has(sortField)) {
@@ -106,8 +97,6 @@ export const productRepository = {
         id: true,
         name: true,
         sku: true,
-        purchasePrice: true,
-        sellingPrice: true,
         unit: { select: { symbol: true } },
       },
       orderBy: { name: "asc" },

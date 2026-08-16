@@ -1,28 +1,21 @@
 import {
   reportRepository,
-  type DateRangeFilters,
   type DeliveryReportFilters,
   type InventoryReportFilters,
   type PurchaseReportFilters,
   type StockMovementReportFilters,
 } from "@/repositories/report.repository";
 import type {
-  CategoryValuePoint,
+  CategoryStockPoint,
   DeliveryReportRow,
   DeliveryReportSummary,
   DeliveryStatusPoint,
   InventoryReportRow,
   InventoryReportSummary,
-  MonthlyRevenuePoint,
-  MonthlySpendPoint,
-  ProfitChartPoint,
-  ProfitReportRow,
-  ProfitReportSummary,
+  MonthlyOrderCountPoint,
   PurchaseReportRow,
   PurchaseReportSummary,
   ReportResult,
-  SalesReportRow,
-  SalesReportSummary,
   StockMovementPoint,
   StockMovementReportRow,
   StockMovementSummary,
@@ -70,14 +63,13 @@ function matchesSearch(search: string | undefined, ...fields: string[]): boolean
 async function getInventoryReport(
   filters: InventoryReportFilters & { lowStockOnly?: boolean; search?: string },
   page: PageParams,
-): Promise<ReportResult<InventoryReportRow, InventoryReportSummary, CategoryValuePoint>> {
+): Promise<ReportResult<InventoryReportRow, InventoryReportSummary, CategoryStockPoint>> {
   const products = await reportRepository.getInventoryReportProducts(filters);
 
   let allRows: InventoryReportRow[] = products.map((product) => {
     const quantity = filters.warehouseId
       ? product.inventories.reduce((sum, row) => sum + Number(row.quantity), 0)
       : Number(product.currentStock);
-    const unitCost = Number(product.purchasePrice);
     const minimumStock = Number(product.minimumStock);
 
     return {
@@ -87,8 +79,6 @@ async function getInventoryReport(
       categoryName: product.category.name,
       unitSymbol: product.unit.symbol,
       quantity,
-      unitCost,
-      totalValue: round2(quantity * unitCost),
       minimumStock,
       stockStatus: stockStatusOf(quantity, minimumStock),
     };
@@ -101,19 +91,18 @@ async function getInventoryReport(
 
   const summary: InventoryReportSummary = {
     totalSkus: allRows.length,
-    totalStockValue: round2(allRows.reduce((sum, row) => sum + row.totalValue, 0)),
     lowStockCount: allRows.filter((row) => row.stockStatus === "LOW_STOCK").length,
     outOfStockCount: allRows.filter((row) => row.stockStatus === "OUT_OF_STOCK").length,
   };
 
   const categoryTotals = new Map<string, number>();
   for (const row of allRows) {
-    categoryTotals.set(row.categoryName, (categoryTotals.get(row.categoryName) ?? 0) + row.totalValue);
+    categoryTotals.set(row.categoryName, (categoryTotals.get(row.categoryName) ?? 0) + row.quantity);
   }
-  const chart: CategoryValuePoint[] = Array.from(categoryTotals.entries())
-    .map(([name, value]) => ({ name, value: round2(value) }))
-    .filter((point) => point.value > 0)
-    .sort((a, b) => b.value - a.value)
+  const chart: CategoryStockPoint[] = Array.from(categoryTotals.entries())
+    .map(([name, quantity]) => ({ name, quantity: round2(quantity) }))
+    .filter((point) => point.quantity > 0)
+    .sort((a, b) => b.quantity - a.quantity)
     .slice(0, CATEGORY_CHART_LIMIT);
 
   return {
@@ -129,7 +118,7 @@ async function getInventoryReport(
 async function getPurchaseReport(
   filters: PurchaseReportFilters & { search?: string },
   page: PageParams,
-): Promise<ReportResult<PurchaseReportRow, PurchaseReportSummary, MonthlySpendPoint>> {
+): Promise<ReportResult<PurchaseReportRow, PurchaseReportSummary, MonthlyOrderCountPoint>> {
   const orders = await reportRepository.getPurchaseOrders(filters);
 
   const allRows: PurchaseReportRow[] = orders
@@ -140,37 +129,31 @@ async function getPurchaseReport(
       orderDate: order.orderDate.toISOString(),
       status: order.status,
       itemCount: order._count.items,
-      totalAmount: Number(order.totalAmount),
     }))
     .filter((row) => matchesSearch(filters.search, row.poNumber, row.supplierName));
 
-  const nonCancelled = allRows.filter((row) => row.status !== "CANCELLED");
-  const totalSpend = round2(nonCancelled.reduce((sum, row) => sum + row.totalAmount, 0));
-
   const summary: PurchaseReportSummary = {
     totalOrders: allRows.length,
-    totalSpend,
-    averageOrderValue: nonCancelled.length > 0 ? round2(totalSpend / nonCancelled.length) : 0,
     completedCount: allRows.filter((row) => row.status === "COMPLETED").length,
   };
 
-  const buckets = new Map<string, { label: string; total: number }>();
+  const buckets = new Map<string, { label: string; count: number }>();
   const cursor = new Date();
   cursor.setDate(1);
   cursor.setHours(0, 0, 0, 0);
   cursor.setMonth(cursor.getMonth() - (CATEGORY_CHART_MONTHS - 1));
   for (let i = 0; i < CATEGORY_CHART_MONTHS; i++) {
-    buckets.set(monthKey(cursor), { label: monthLabel(cursor), total: 0 });
+    buckets.set(monthKey(cursor), { label: monthLabel(cursor), count: 0 });
     cursor.setMonth(cursor.getMonth() + 1);
   }
   for (const row of allRows) {
     if (row.status === "CANCELLED") continue;
     const bucket = buckets.get(monthKey(new Date(row.orderDate)));
-    if (bucket) bucket.total += row.totalAmount;
+    if (bucket) bucket.count += 1;
   }
-  const chart: MonthlySpendPoint[] = Array.from(buckets.values()).map((bucket) => ({
+  const chart: MonthlyOrderCountPoint[] = Array.from(buckets.values()).map((bucket) => ({
     month: bucket.label,
-    total: round2(bucket.total),
+    count: bucket.count,
   }));
 
   return {
@@ -223,114 +206,6 @@ async function getDeliveryReport(
     summary,
     chart,
   };
-}
-
-async function getSalesReport(
-  filters: DeliveryReportFilters & { search?: string },
-  page: PageParams,
-): Promise<ReportResult<SalesReportRow, SalesReportSummary, MonthlyRevenuePoint>> {
-  const deliveries = await reportRepository.getDeliveries(filters);
-
-  const allRows: SalesReportRow[] = deliveries
-    .map((delivery) => ({
-      id: delivery.id,
-      deliveryNumber: delivery.deliveryNumber,
-      customerName: delivery.customer.companyName,
-      scheduledDate: delivery.scheduledDate.toISOString(),
-      status: delivery.status,
-      itemCount: delivery._count.items,
-      totalAmount: Number(delivery.totalAmount),
-    }))
-    .filter((row) => matchesSearch(filters.search, row.deliveryNumber, row.customerName));
-
-  const nonCancelled = allRows.filter((row) => row.status !== "CANCELLED");
-  const totalRevenue = round2(nonCancelled.reduce((sum, row) => sum + row.totalAmount, 0));
-
-  const summary: SalesReportSummary = {
-    totalDeliveries: allRows.length,
-    totalRevenue,
-    averageDeliveryValue: nonCancelled.length > 0 ? round2(totalRevenue / nonCancelled.length) : 0,
-    deliveredCount: allRows.filter((row) => row.status === "DELIVERED").length,
-  };
-
-  const buckets = new Map<string, { label: string; total: number }>();
-  const cursor = new Date();
-  cursor.setDate(1);
-  cursor.setHours(0, 0, 0, 0);
-  cursor.setMonth(cursor.getMonth() - (CATEGORY_CHART_MONTHS - 1));
-  for (let i = 0; i < CATEGORY_CHART_MONTHS; i++) {
-    buckets.set(monthKey(cursor), { label: monthLabel(cursor), total: 0 });
-    cursor.setMonth(cursor.getMonth() + 1);
-  }
-  for (const row of allRows) {
-    if (row.status === "CANCELLED") continue;
-    const bucket = buckets.get(monthKey(new Date(row.scheduledDate)));
-    if (bucket) bucket.total += row.totalAmount;
-  }
-  const chart: MonthlyRevenuePoint[] = Array.from(buckets.values()).map((bucket) => ({
-    month: bucket.label,
-    total: round2(bucket.total),
-  }));
-
-  return {
-    data: paginate(allRows, page),
-    total: allRows.length,
-    page: page.page,
-    pageSize: page.pageSize,
-    summary,
-    chart,
-  };
-}
-
-async function getProfitReport(filters: DateRangeFilters): Promise<{
-  summary: ProfitReportSummary;
-  chart: ProfitChartPoint[];
-  rows: ProfitReportRow[];
-}> {
-  const items = await reportRepository.getDeliveryItemsForProfit(filters);
-
-  const buckets = new Map<string, { label: string; revenue: number; cost: number }>();
-  const cursor = new Date();
-  cursor.setDate(1);
-  cursor.setHours(0, 0, 0, 0);
-  cursor.setMonth(cursor.getMonth() - (CATEGORY_CHART_MONTHS - 1));
-  for (let i = 0; i < CATEGORY_CHART_MONTHS; i++) {
-    buckets.set(monthKey(cursor), { label: monthLabel(cursor), revenue: 0, cost: 0 });
-    cursor.setMonth(cursor.getMonth() + 1);
-  }
-
-  for (const item of items) {
-    const bucket = buckets.get(monthKey(item.delivery.scheduledDate));
-    if (!bucket) continue;
-    const quantity = Number(item.quantity);
-    bucket.revenue += quantity * Number(item.unitPrice);
-    bucket.cost += quantity * Number(item.product.purchasePrice);
-  }
-
-  function marginOf(revenue: number, cost: number): number {
-    return revenue > 0 ? round2(((revenue - cost) / revenue) * 100) : 0;
-  }
-
-  const rows: ProfitReportRow[] = Array.from(buckets.values()).map((bucket) => ({
-    month: bucket.label,
-    revenue: round2(bucket.revenue),
-    costOfGoods: round2(bucket.cost),
-    profit: round2(bucket.revenue - bucket.cost),
-    marginPercent: marginOf(bucket.revenue, bucket.cost),
-  }));
-
-  const chart: ProfitChartPoint[] = rows.map((row) => ({ month: row.month, revenue: row.revenue, cost: row.costOfGoods }));
-
-  const totalRevenue = round2(rows.reduce((sum, row) => sum + row.revenue, 0));
-  const totalCostOfGoods = round2(rows.reduce((sum, row) => sum + row.costOfGoods, 0));
-  const summary: ProfitReportSummary = {
-    totalRevenue,
-    totalCostOfGoods,
-    grossProfit: round2(totalRevenue - totalCostOfGoods),
-    marginPercent: marginOf(totalRevenue, totalCostOfGoods),
-  };
-
-  return { summary, chart, rows };
 }
 
 async function getStockMovementReport(
@@ -391,7 +266,5 @@ export const reportService = {
   getInventoryReport,
   getPurchaseReport,
   getDeliveryReport,
-  getSalesReport,
-  getProfitReport,
   getStockMovementReport,
 };

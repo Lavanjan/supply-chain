@@ -11,8 +11,6 @@ export interface ProductListItem {
   unitId: string;
   unitName: string;
   unitSymbol: string;
-  purchasePrice: number;
-  sellingPrice: number;
   minimumStock: number;
   maximumStock: number;
   currentStock: number;

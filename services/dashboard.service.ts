@@ -30,36 +30,25 @@ function dayLabel(date: Date): string {
 }
 
 async function getStats(): Promise<DashboardStats> {
-  const [
-    totalProducts,
-    productSnapshot,
-    supplierCount,
-    customerCount,
-    purchaseOrderCount,
-    todaysDeliveriesCount,
-    totalRevenue,
-  ] = await Promise.all([
-    dashboardRepository.countProducts(),
-    dashboardRepository.getProductStockSnapshot(),
-    dashboardRepository.countSuppliers(),
-    dashboardRepository.countCustomers(),
-    dashboardRepository.countPurchaseOrders(),
-    dashboardRepository.countTodaysDeliveries(),
-    dashboardRepository.getTotalRevenue(),
-  ]);
+  const [totalProducts, productSnapshot, supplierCount, customerCount, purchaseOrderCount, todaysDeliveriesCount] =
+    await Promise.all([
+      dashboardRepository.countProducts(),
+      dashboardRepository.getProductStockSnapshot(),
+      dashboardRepository.countSuppliers(),
+      dashboardRepository.countCustomers(),
+      dashboardRepository.countPurchaseOrders(),
+      dashboardRepository.countTodaysDeliveries(),
+    ]);
 
   let currentInventoryUnits = 0;
-  let inventoryValue = 0;
   let lowStockCount = 0;
   let outOfStockCount = 0;
 
   for (const product of productSnapshot) {
     const stock = Number(product.currentStock);
-    const price = Number(product.purchasePrice);
     const minimum = Number(product.minimumStock);
 
     currentInventoryUnits += stock;
-    inventoryValue += stock * price;
 
     if (stock <= 0) {
       outOfStockCount += 1;
@@ -71,8 +60,6 @@ async function getStats(): Promise<DashboardStats> {
   return {
     totalProducts,
     currentInventoryUnits,
-    inventoryValue,
-    totalRevenue,
     lowStockCount,
     outOfStockCount,
     supplierCount,
@@ -85,26 +72,26 @@ async function getStats(): Promise<DashboardStats> {
 async function getMonthlyPurchases(): Promise<MonthlyPurchasePoint[]> {
   const orders = await dashboardRepository.getRecentPurchaseOrdersForMonthlyTotals();
 
-  const buckets = new Map<string, { label: string; total: number }>();
+  const buckets = new Map<string, { label: string; count: number }>();
   const cursor = new Date();
   cursor.setDate(1);
   cursor.setHours(0, 0, 0, 0);
   cursor.setMonth(cursor.getMonth() - (MONTHLY_PURCHASES_MONTHS - 1));
 
   for (let i = 0; i < MONTHLY_PURCHASES_MONTHS; i++) {
-    buckets.set(monthKey(cursor), { label: monthLabel(cursor), total: 0 });
+    buckets.set(monthKey(cursor), { label: monthLabel(cursor), count: 0 });
     cursor.setMonth(cursor.getMonth() + 1);
   }
 
   for (const order of orders) {
     const key = monthKey(order.orderDate);
     const bucket = buckets.get(key);
-    if (bucket) bucket.total += Number(order.totalAmount);
+    if (bucket) bucket.count += 1;
   }
 
   return Array.from(buckets.values()).map((bucket) => ({
     month: bucket.label,
-    total: Math.round(bucket.total * 100) / 100,
+    count: bucket.count,
   }));
 }
 
@@ -136,16 +123,16 @@ async function getInventoryMovement(): Promise<InventoryMovementPoint[]> {
   }));
 }
 
-async function getTopProductsByValue(): Promise<TopProductPoint[]> {
+async function getTopProductsByStock(): Promise<TopProductPoint[]> {
   const products = await dashboardRepository.getProductStockSnapshot();
 
   return products
     .map((product) => ({
       name: product.name,
-      value: Math.round(Number(product.currentStock) * Number(product.purchasePrice) * 100) / 100,
+      quantity: Number(product.currentStock),
     }))
-    .filter((product) => product.value > 0)
-    .sort((a, b) => b.value - a.value)
+    .filter((product) => product.quantity > 0)
+    .sort((a, b) => b.quantity - a.quantity)
     .slice(0, TOP_PRODUCTS_LIMIT);
 }
 
@@ -153,8 +140,8 @@ async function getCharts(): Promise<DashboardChartsPayload> {
   const [monthlyPurchases, inventoryMovement, topProducts, topSuppliers] = await Promise.all([
     getMonthlyPurchases(),
     getInventoryMovement(),
-    getTopProductsByValue(),
-    dashboardRepository.getTopSuppliersByPurchaseValue(),
+    getTopProductsByStock(),
+    dashboardRepository.getTopSuppliersByOrderCount(),
   ]);
 
   return { monthlyPurchases, inventoryMovement, topProducts, topSuppliers };
@@ -180,7 +167,7 @@ async function getRecentOrders(): Promise<RecentOrderItem[]> {
     id: order.id,
     poNumber: order.poNumber,
     supplierName: order.supplier.companyName,
-    totalAmount: Number(order.totalAmount),
+    itemCount: order._count.items,
     status: order.status,
     orderDate: order.orderDate.toISOString(),
   }));

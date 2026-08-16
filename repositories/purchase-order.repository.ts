@@ -29,7 +29,7 @@ function buildWhere(
   };
 }
 
-const SORTABLE_FIELDS = new Set(["poNumber", "orderDate", "status", "totalAmount", "createdAt"]);
+const SORTABLE_FIELDS = new Set(["poNumber", "orderDate", "status", "createdAt"]);
 
 function buildOrderBy(
   sortField?: string,
@@ -92,18 +92,7 @@ export const purchaseOrderRepository = {
     expectedDate: Date | null;
     notes: string | null;
     createdBy: string;
-    subtotal: number;
-    discountAmount: number;
-    taxAmount: number;
-    totalAmount: number;
-    items: {
-      productId: string;
-      quantity: number;
-      unitPrice: number;
-      discount: number;
-      tax: number;
-      totalPrice: number;
-    }[];
+    items: { productId: string; quantity: number }[];
   }) {
     return prisma.purchaseOrder.create({
       data: {
@@ -114,10 +103,6 @@ export const purchaseOrderRepository = {
         expectedDate: data.expectedDate,
         notes: data.notes,
         createdBy: data.createdBy,
-        subtotal: data.subtotal,
-        discountAmount: data.discountAmount,
-        taxAmount: data.taxAmount,
-        totalAmount: data.totalAmount,
         items: { create: data.items },
       },
       include: detailInclude,
@@ -132,18 +117,7 @@ export const purchaseOrderRepository = {
       orderDate: Date;
       expectedDate: Date | null;
       notes: string | null;
-      subtotal: number;
-      discountAmount: number;
-      taxAmount: number;
-      totalAmount: number;
-      items: {
-        productId: string;
-        quantity: number;
-        unitPrice: number;
-        discount: number;
-        tax: number;
-        totalPrice: number;
-      }[];
+      items: { productId: string; quantity: number }[];
     },
   ) {
     return prisma.$transaction(async (tx) => {
@@ -156,10 +130,6 @@ export const purchaseOrderRepository = {
           orderDate: data.orderDate,
           expectedDate: data.expectedDate,
           notes: data.notes,
-          subtotal: data.subtotal,
-          discountAmount: data.discountAmount,
-          taxAmount: data.taxAmount,
-          totalAmount: data.totalAmount,
           items: { create: data.items },
         },
         include: detailInclude,

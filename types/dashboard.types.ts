@@ -1,8 +1,6 @@
 export interface DashboardStats {
   totalProducts: number;
   currentInventoryUnits: number;
-  inventoryValue: number;
-  totalRevenue: number;
   lowStockCount: number;
   outOfStockCount: number;
   supplierCount: number;
@@ -13,7 +11,7 @@ export interface DashboardStats {
 
 export interface MonthlyPurchasePoint {
   month: string;
-  total: number;
+  count: number;
 }
 
 export interface InventoryMovementPoint {
@@ -24,12 +22,12 @@ export interface InventoryMovementPoint {
 
 export interface TopProductPoint {
   name: string;
-  value: number;
+  quantity: number;
 }
 
 export interface TopSupplierPoint {
   name: string;
-  value: number;
+  count: number;
 }
 
 export interface DashboardChartsPayload {
@@ -52,7 +50,7 @@ export interface RecentOrderItem {
   id: string;
   poNumber: string;
   supplierName: string;
-  totalAmount: number;
+  itemCount: number;
   status: string;
   orderDate: string;
 }

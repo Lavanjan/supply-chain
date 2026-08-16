@@ -8,7 +8,6 @@ export interface PurchaseOrderListItem {
   orderDate: string;
   expectedDate: string | null;
   status: PurchaseOrderStatus;
-  totalAmount: number;
   itemCount: number;
   createdAt: string;
 }
@@ -20,10 +19,6 @@ export interface PurchaseOrderItemDetail {
   sku: string;
   unitSymbol: string;
   quantity: number;
-  unitPrice: number;
-  discount: number;
-  tax: number;
-  totalPrice: number;
 }
 
 export interface PurchaseOrderDetail {
@@ -39,10 +34,6 @@ export interface PurchaseOrderDetail {
   orderDate: string;
   expectedDate: string | null;
   status: PurchaseOrderStatus;
-  subtotal: number;
-  discountAmount: number;
-  taxAmount: number;
-  totalAmount: number;
   notes: string | null;
   createdByName: string;
   approvedByName: string | null;

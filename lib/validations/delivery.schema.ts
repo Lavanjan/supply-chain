@@ -3,7 +3,6 @@ import { z } from "zod";
 export const deliveryItemSchema = z.object({
   productId: z.string().min(1, "Product is required"),
   quantity: z.number().positive("Quantity must be greater than 0"),
-  unitPrice: z.number().min(0, "Must be 0 or greater"),
 });
 
 export type DeliveryItemInput = z.infer<typeof deliveryItemSchema>;

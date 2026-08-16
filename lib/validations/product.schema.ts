@@ -9,8 +9,6 @@ export const productSchema = z
     barcode: z.string().max(50, "Barcode is too long").optional().or(z.literal("")),
     categoryId: z.string().min(1, "Category is required"),
     unitId: z.string().min(1, "Unit is required"),
-    purchasePrice: z.number().min(0, "Must be 0 or greater"),
-    sellingPrice: z.number().min(0, "Must be 0 or greater"),
     minimumStock: z.number().min(0, "Must be 0 or greater"),
     maximumStock: z.number().min(0, "Must be 0 or greater"),
     currentStock: z.number().min(0, "Must be 0 or greater"),

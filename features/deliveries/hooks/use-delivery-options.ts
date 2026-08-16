@@ -16,8 +16,6 @@ interface ProductOption {
   id: string;
   name: string;
   sku: string;
-  purchasePrice: number;
-  sellingPrice: number;
   unitSymbol: string;
 }
 

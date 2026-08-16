@@ -27,8 +27,6 @@ const DEFAULT_VALUES: ProductInput = {
   barcode: "",
   categoryId: "",
   unitId: "",
-  purchasePrice: 0,
-  sellingPrice: 0,
   minimumStock: 0,
   maximumStock: 0,
   currentStock: 0,
@@ -75,8 +73,6 @@ export function ProductFormModal({ open, onClose, onSuccess, product }: ProductF
               barcode: product.barcode ?? "",
               categoryId: product.categoryId,
               unitId: product.unitId,
-              purchasePrice: product.purchasePrice,
-              sellingPrice: product.sellingPrice,
               minimumStock: product.minimumStock,
               maximumStock: product.maximumStock,
               currentStock: product.currentStock,
@@ -183,34 +179,6 @@ export function ProductFormModal({ open, onClose, onSuccess, product }: ProductF
                 status={errors.unitId ? "error" : ""}
                 placeholder={t("unitPlaceholder")}
                 options={units.map((unit) => ({ value: unit.id, label: `${unit.name} (${unit.symbol})` }))}
-              />
-            )}
-          </FormField>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-          <FormField control={control} name="purchasePrice" label={t("purchasePriceLabel")} required>
-            {(field) => (
-              <InputNumber
-                {...field}
-                min={0}
-                precision={2}
-                prefix="LKR"
-                className="w-full"
-                status={errors.purchasePrice ? "error" : ""}
-              />
-            )}
-          </FormField>
-
-          <FormField control={control} name="sellingPrice" label={t("sellingPriceLabel")} required>
-            {(field) => (
-              <InputNumber
-                {...field}
-                min={0}
-                precision={2}
-                prefix="LKR"
-                className="w-full"
-                status={errors.sellingPrice ? "error" : ""}
               />
             )}
           </FormField>

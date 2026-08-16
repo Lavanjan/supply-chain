@@ -66,10 +66,10 @@ export function DashboardCharts() {
       <ChartCard title={t("inventoryMovement")}>
         <InventoryMovementChart data={data.inventoryMovement} />
       </ChartCard>
-      <ChartCard title={t("topProductsByValue")}>
+      <ChartCard title={t("topProductsByStock")}>
         <TopProductsChart data={data.topProducts} />
       </ChartCard>
-      <ChartCard title={t("topSuppliersByPurchases")}>
+      <ChartCard title={t("topSuppliersByOrders")}>
         <TopSuppliersChart data={data.topSuppliers} />
       </ChartCard>
     </div>
