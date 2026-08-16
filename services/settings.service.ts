@@ -6,7 +6,7 @@ import type { CompanyProfile } from "@/types/settings.types";
 const GENERAL_GROUP = "general";
 
 const DEFAULTS: CompanyProfile = {
-  companyName: "Supply Chain & Inventory Management System",
+  companyName: "Rajan Suppliers",
   companyAddress: "",
   companyPhone: "",
   companyEmail: "",

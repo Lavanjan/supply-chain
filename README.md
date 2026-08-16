@@ -1,4 +1,4 @@
-# Supply Chain & Inventory Management System
+# Rajan Suppliers
 
 Enterprise inventory and supply chain management for prisons, hospitals, government
 institutions, schools, hotels and companies.

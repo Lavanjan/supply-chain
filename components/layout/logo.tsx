@@ -8,7 +8,7 @@ export function Logo({ collapsed = false }: { collapsed?: boolean }) {
       </div>
       {!collapsed && (
         <span className="whitespace-nowrap text-sm font-semibold leading-tight">
-          Supply Chain
+          Rajan Suppliers
           <br />
           <span className="text-xs font-normal text-neutral-500">Inventory System</span>
         </span>

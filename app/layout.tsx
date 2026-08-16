@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Supply Chain & Inventory Management System",
-    template: "%s | Supply Chain & Inventory Management System",
+    default: "Rajan Suppliers",
+    template: "%s | Rajan Suppliers",
   },
   description:
     "Enterprise inventory and supply chain management for prisons, hospitals, government institutions, schools, hotels and companies.",
