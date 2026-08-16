@@ -79,7 +79,13 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
         const line = detail.items[index];
         const item = values.items[index];
         if (!line) continue;
-        if (item.receivedQuantity + item.wastedQuantity > line.remainingQuantity) {
+        const received = item.receivedQuantity ?? 0;
+        const wasted = item.wastedQuantity ?? 0;
+        if (received < 0 || wasted < 0) {
+          message.error(`${line.productName}: quantities cannot be negative.`);
+          return;
+        }
+        if (received + wasted > line.remainingQuantity) {
           message.error(`${line.productName}: received + wastage cannot exceed the remaining ${line.remainingQuantity} ${line.unitSymbol}.`);
           return;
         }
@@ -97,6 +103,12 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
     }
   }
 
+  const hasOverLimitItem =
+    detail?.items.some((line, index) => {
+      const used = (items[index]?.receivedQuantity ?? 0) + (items[index]?.wastedQuantity ?? 0);
+      return used > line.remainingQuantity;
+    }) ?? false;
+
   return (
     <Modal
       title="Receive Goods"
@@ -105,7 +117,7 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
       onOk={handleSubmit(onSubmit)}
       confirmLoading={isSubmitting}
       okText="Receive Goods"
-      okButtonProps={{ disabled: !purchaseOrderId }}
+      okButtonProps={{ disabled: !purchaseOrderId || hasOverLimitItem }}
       width={1100}
       destroyOnHidden
     >
@@ -159,6 +171,14 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
             {errors.items?.message && (
               <Alert type="error" showIcon message={errors.items.message} className="mb-3" />
             )}
+            {hasOverLimitItem && (
+              <Alert
+                type="error"
+                showIcon
+                message="One or more items have received + wastage greater than what remains on the order."
+                className="mb-3"
+              />
+            )}
             <div className="overflow-x-auto">
               <Table
                 dataSource={fields}
@@ -204,27 +224,58 @@ export function GoodsReceiveNoteFormModal({ open, onClose, onSuccess, onCreated 
                     title: "Remaining",
                     key: "remaining",
                     align: "right",
-                    render: (_, __, index) => detail.items[index]?.remainingQuantity ?? 0,
+                    render: (_, __, index) => {
+                      const line = detail.items[index];
+                      const remaining = line?.remainingQuantity ?? 0;
+                      const used = (items[index]?.receivedQuantity ?? 0) + (items[index]?.wastedQuantity ?? 0);
+                      return <span className={used > remaining ? "text-red-500 font-medium" : undefined}>{remaining}</span>;
+                    },
                   },
                   {
                     title: "Receive Now",
                     key: "receiveNow",
                     width: 130,
-                    render: (_, __, index) => (
-                      <FormField control={control} name={`items.${index}.receivedQuantity`} className="!mb-0">
-                        {(field) => <InputNumber {...field} min={0} className="w-full" />}
-                      </FormField>
-                    ),
+                    render: (_, __, index) => {
+                      const remaining = detail.items[index]?.remainingQuantity ?? 0;
+                      const wasted = items[index]?.wastedQuantity ?? 0;
+                      return (
+                        <FormField control={control} name={`items.${index}.receivedQuantity`} className="!mb-0">
+                          {(field) => (
+                            <InputNumber
+                              {...field}
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value ?? 0)}
+                              min={0}
+                              max={Math.max(0, remaining - wasted)}
+                              className="w-full"
+                            />
+                          )}
+                        </FormField>
+                      );
+                    },
                   },
                   {
                     title: "Wastage",
                     key: "wastage",
                     width: 130,
-                    render: (_, __, index) => (
-                      <FormField control={control} name={`items.${index}.wastedQuantity`} className="!mb-0">
-                        {(field) => <InputNumber {...field} min={0} className="w-full" />}
-                      </FormField>
-                    ),
+                    render: (_, __, index) => {
+                      const remaining = detail.items[index]?.remainingQuantity ?? 0;
+                      const received = items[index]?.receivedQuantity ?? 0;
+                      return (
+                        <FormField control={control} name={`items.${index}.wastedQuantity`} className="!mb-0">
+                          {(field) => (
+                            <InputNumber
+                              {...field}
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value ?? 0)}
+                              min={0}
+                              max={Math.max(0, remaining - received)}
+                              className="w-full"
+                            />
+                          )}
+                        </FormField>
+                      );
+                    },
                   },
                   {
                     title: "Batch Number",
