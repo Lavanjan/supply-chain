@@ -194,21 +194,9 @@ export function ProductFormModal({ open, onClose, onSuccess, product }: ProductF
           </FormField>
         </div>
 
-        {isEdit ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-            <FormField control={control} name="currentStock" label={t("currentStockLabel")} required>
-              {(field) => <InputNumber {...field} min={0} className="w-full" status={errors.currentStock ? "error" : ""} />}
-            </FormField>
-
-            <FormField control={control} name="status" label={t("statusLabel")} required>
-              {(field) => <Select {...field} options={STATUS_OPTIONS} />}
-            </FormField>
-          </div>
-        ) : (
-          <FormField control={control} name="status" label={t("statusLabel")} required>
-            {(field) => <Select {...field} options={STATUS_OPTIONS} />}
-          </FormField>
-        )}
+        <FormField control={control} name="status" label={t("statusLabel")} required>
+          {(field) => <Select {...field} options={STATUS_OPTIONS} />}
+        </FormField>
 
         <FormField control={control} name="description" label={t("descriptionLabel")}>
           {(field) => <Input.TextArea {...field} rows={3} placeholder={t("descriptionPlaceholder")} />}
